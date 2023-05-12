@@ -11,6 +11,7 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/
 
 # AWS User-specific
 .idea/**/aws.xml
@@ -200,4 +201,4 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
-# End of https://www.toptal.com/developers/gitignore/api/macos,java,intellij,gradle
+# End of https://www.toptal.com/developers/gitignore/api/macos,java,intellij,gradle!/.idea/
