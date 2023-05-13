@@ -15,6 +15,7 @@ public class Contract {
 
 
     public boolean contract(){
+
         return false;
     }
 
