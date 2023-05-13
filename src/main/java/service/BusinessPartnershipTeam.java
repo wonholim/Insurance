@@ -1,6 +1,6 @@
 package service;
 
-import team.TeamImpl;
+import domain.team.TeamImpl;
 
 import java.util.List;
 

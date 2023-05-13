@@ -1,7 +1,7 @@
-package insurance;
+package domain.insurance;
 
-import contract.Contract;
-import team.Team;
+import domain.contract.Contract;
+import domain.team.Team;
 
 public abstract class Insurance {
 

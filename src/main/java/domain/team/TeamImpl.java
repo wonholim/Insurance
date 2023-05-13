@@ -1,11 +1,9 @@
-package team;
+package domain.team;
 
-
-import team.Team;
 
 import java.util.List;
 
-public class TeamImpl extends Team {
+public class TeamImpl implements TeamList {
 
 	private List teamIDList;
 	public Team m_Team;

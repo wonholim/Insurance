@@ -1,8 +1,8 @@
-package contract;
+package domain.contract;
 
-import customer.Customer;
+import domain.customer.Customer;
 
-public class Contract {
+public class Contract extends ContractListImpl{
 
     private Customer customer;
     private String date;

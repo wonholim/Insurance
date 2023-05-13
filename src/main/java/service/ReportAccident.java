@@ -1,6 +1,6 @@
 package service;
 
-import customer.Customer;
+import domain.customer.Customer;
 
 public class ReportAccident {
 

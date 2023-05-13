@@ -29,6 +29,7 @@ public class Database {
         }
         return null;
     }
+
     public void releaseConnection(Connection con) {
         try {
             if (con != null)
@@ -88,4 +89,20 @@ public class Database {
         return false;
     }
 
+    public boolean authentication(String query, String[] user) {
+        try (PreparedStatement statement = con.prepareStatement(query)) {
+            statement.setString(1, user[0]);
+            statement.setString(2, user[1]);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            // 예외 처리
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

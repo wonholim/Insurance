@@ -1,13 +1,13 @@
-package team;
+package domain.team;
 
 
 import service.*;
 
 import java.util.List;
 
-public class Team {
+public class Team extends TeamImpl {
 
-	private customer.Customer Customer;
+	private domain.customer.Customer Customer;
 	private int teamID;
 	private List<Team> teamList;
 	public PolicyRenewalDate m_PolicyRenewalDate;

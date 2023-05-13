@@ -1,10 +1,10 @@
-package customer;
+package domain.customer;
 
-import contract.Contract;
+import domain.contract.Contract;
 
 import java.util.List;
 
-public class Customer {
+public class Customer extends CustomerListImpl{
     private int age;
     private String carModel;
     private int carModelYear;

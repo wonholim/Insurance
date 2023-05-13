@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Payment {
 
-	private List<insurance.Insurance> Insurance;
+	private List<domain.insurance.Insurance> Insurance;
 
 	public Payment(){
 

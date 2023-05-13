@@ -1,4 +1,4 @@
-package customer;
+package domain.customer;
 public class Enrollment extends Customer {
 
     private int drvingExperience;

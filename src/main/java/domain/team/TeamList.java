@@ -1,4 +1,4 @@
-package team;
+package domain.team;
 
 import java.awt.*;
 

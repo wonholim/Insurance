@@ -1,4 +1,6 @@
-package insurance;
+package domain.insurance;
+
+import domain.insurance.Insurance;
 
 public class Accident extends Insurance {
 

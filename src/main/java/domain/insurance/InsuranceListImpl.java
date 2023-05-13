@@ -1,4 +1,4 @@
-package insurance;
+package domain.insurance;
 
 import java.util.List;
 

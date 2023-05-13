@@ -1,11 +1,11 @@
 package dao;
 
 import connector.Database;
-import customer.Customer;
+import domain.customer.Customer;
 
-public class CustomerRegisterDAO extends Database {
+public class CustomerDAO extends Database {
 
-    public CustomerRegisterDAO() {
+    public CustomerDAO() {
         super.initConnection();
     }
     public boolean register(Customer customer) {
@@ -14,6 +14,12 @@ public class CustomerRegisterDAO extends Database {
                         + customer.getPhoneNum() + "', '" + customer.getDriverLicense() + "', '" + customer.getCarModel() + "', '"
                         + customer.getCarNum() + "', '" + customer.getCustomerID() + "', '" + customer.getPassword() + "');";
         if(super.create(query)) return true;
+        return false;
+    }
+
+    public boolean login(String[] user) {
+        String query = "SELECT customerID, password FROM Customer WHERE customerID = ? AND password = ?";
+        if(super.authentication(query, user)) return true;
         return false;
     }
 }

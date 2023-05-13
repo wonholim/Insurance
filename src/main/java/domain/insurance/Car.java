@@ -1,6 +1,7 @@
-package insurance;
+package domain.insurance;
 
-import customer.Customer;
+import domain.customer.Customer;
+import domain.insurance.Insurance;
 
 public class Car extends Insurance {
 

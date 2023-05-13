@@ -2,7 +2,7 @@ package service;
 
 public class CancellationInsurance {
 
-    private customer.Customer Customer;
+    private domain.customer.Customer Customer;
     private String InsuranceID;
 
     public CancellationInsurance(){

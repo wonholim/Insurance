@@ -1,4 +1,4 @@
-package contract;
+package domain.contract;
 
 import java.util.List;
 

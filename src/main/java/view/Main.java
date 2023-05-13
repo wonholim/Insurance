@@ -1,35 +1,36 @@
-package main;
+package view;
 
-import contract.Contract;
-import contract.ContractListImpl;
-import controller.CustomerRegisterController;
-import customer.Customer;
-import customer.CustomerListImpl;
+import domain.contract.Contract;
+import domain.contract.ContractListImpl;
+import controller.CustomerController;
+import domain.customer.Customer;
 
+import java.nio.Buffer;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.io.*;
 public class Main {
-
     public static void main(String[] args) throws NotBoundException, IOException {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
             while (true) {
                 printFirstMenu();
                 String select = br.readLine().trim();
-                System.out.println(select);
                 switch (select) {
                     case "1":
                         One:
                         while(true) {
                             printCustomerLoginMenu();
                             select = br.readLine().trim();
-                            System.out.println(select);
                             switch (select) {
                                 case "1":
-                                    printCustomerLogin();
+                                    String userName = printCustomerLogin(br);
+                                    if (userName != null) {
+                                       CustomerLoginView customerLoginView = new CustomerLoginView(userName);
+                                       customerLoginView.customerSelect(br);
+                                    }
                                     break;
                                 case "2":
-                                    registerCustomer();
+                                    registerCustomer(br);
                                     break;
                                 case "r":
                                     break One;
@@ -45,10 +46,14 @@ public class Main {
                             select = br.readLine().trim();
                             switch (select) {
                                 case "1":
-                                    printEmployeeLoginMenu();
+                                    String employeeName = printEmployeeLogin(br);
+                                    if (employeeName != null) {
+                                        EmployeeLoginView employeeLoginView = new EmployeeLoginView(employeeName);
+                                        employeeLoginView.employeeSelect(br);
+                                    }
                                     break;
                                 case "2":
-                                    registerCustomer();
+                                    registerEmployee(br);
                                     break;
                                 case "r":
                                     break Two;
@@ -64,10 +69,14 @@ public class Main {
                             select = br.readLine().trim();
                             switch (select) {
                                 case "1":
-                                    printCustomerLogin();
+                                    String FSSName = printFSSLogin(br);
+                                    if(FSSName != null) {
+                                        FSSLoginView fssLoginView = new FSSLoginView(FSSName);
+                                        fssLoginView.fssSelect();
+                                    }
                                     break;
                                 case "2":
-                                    registerCustomer();
+                                    registerFSS(br);
                                     break;
                                 case "r":
                                     break Three;
@@ -84,59 +93,83 @@ public class Main {
                 }
             }
         } catch (RemoteException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 
-    private static void insuranceContract() {
-        ContractListImpl contractListImpl = new ContractListImpl();
-        Contract contract = new Contract();
-    }
+    private static String printFSSLogin(BufferedReader br) {
 
-    private static void registerCustomer() {
-        ContractListImpl customerListImpl = new ContractListImpl();
+        return null;
+    }
+    private static void registerFSS(BufferedReader br) {
+
+    }
+    private static String printEmployeeLogin(BufferedReader br) {
+
+        return null;
+    }
+    private static void registerEmployee(BufferedReader br) {
+
+    }
+    private static void registerCustomer(BufferedReader br) {
         Customer customer = new Customer();
-        try(BufferedReader br = new BufferedReader(new InputStreamReader(System.in))){
-            System.out.println("이름 : ");
+        try {
+            System.out.print("이름 : ");
             String name = br.readLine().trim();
             customer.setName(name);
-            System.out.println("나이 : ");
+            System.out.print("나이 : ");
             int age = Integer.parseInt(br.readLine().trim());
             customer.setAge(age);
-            System.out.println("주민등록번호 : ");
+            System.out.print("주민등록번호 : ");
             String registraionNumber = br.readLine().trim();
             customer.setRegistraionNumber(registraionNumber);
-            System.out.println("전화번호 : ");
+            System.out.print("전화번호 : ");
             String phoneNum = br.readLine().trim();
             customer.setPhoneNum(phoneNum);
-            System.out.println("운전 면허 번호 : ");
+            System.out.print("운전 면허 번호 : ");
             String driverLicense = br.readLine().trim();
             customer.setDriverLicense(driverLicense);
-            System.out.println("차종 : ");
+            System.out.print("차종 : ");
             String carModel = br.readLine().trim();
             customer.setCarModel(carModel);
-            System.out.println("차 번호 : ");
+            System.out.print("차 번호 : ");
             String carNum = br.readLine().trim();
             customer.setCarNum(carNum);
-            System.out.println("아이디 : ");
+            System.out.print("아이디 : ");
             String customerID = br.readLine().trim();
             customer.setCustomerID(customerID);
-            System.out.println("비밀번호 : ");
+            System.out.print("비밀번호 : ");
             String password = br.readLine().trim();
             customer.setPassword(password);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        CustomerRegisterController customerRegisterController = new CustomerRegisterController();
-        if (customerRegisterController.register(customer)) {
+        CustomerController customerController = new CustomerController();
+        if (customerController.register(customer)) {
             System.out.println("회원가입이 완료되었습니다.");
         } else {
             System.out.println("이미 등록된 회원입니다.");
         }
     }
-    private static void printCustomerLogin() {
-
+    private static String printCustomerLogin(BufferedReader br) {
+        System.out.println("***************** CUSTOMER LOGIN MENU *****************");
+        String[] user = new String[2];
+        try {
+            System.out.print("ID : ");
+            user[0] = br.readLine().trim();
+            System.out.print("Password : ");
+            user[1] = br.readLine().trim();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        CustomerController customerController = new CustomerController();
+        if (customerController.login(user)) {
+            System.out.println(user[0] + "님 환영합니다.");
+            return user[0];
+        } else {
+            System.out.println("아이디 또는 비밀번호가 올바르지 않습니다.");
+            return null;
+        }
     }
     private static void printFirstMenu() {
         System.out.println("***************** MENU *****************");
@@ -151,54 +184,20 @@ public class Main {
         System.out.println("2. 가입하기");
         System.out.println("r. 뒤로가기");
     }
-    private static void printCustomerMenu() {
-        System.out.println("***************** CUSTOMER MENU *****************");
-        System.out.println("1. 보험가입");
-        System.out.println("2. 보험혜지");
-        System.out.println("3. 보험갱신");
-        System.out.println("4. 사고접수");
-        System.out.println("5. 보험금신청");
-        System.out.println("l. 로그아웃");
-        System.out.println("r. 뒤로가기");
-    }
-    private static void printEmployeeMenu() {
-        System.out.println("***************** EMPLOYEE MENU *****************");
-        System.out.println("1.보험 가입 신청 정보 검증");
-        System.out.println("2. 사고처리");
-        System.out.println("3. 보험금 청구 내역 조사");
-        System.out.println("4. 보험금 청구 내역 심사");
-        System.out.println("5. 보험금 지급");
-        System.out.println("6. 상품개발 등록");
-        System.out.println("l. 로그아웃");
-        System.out.println("r. 뒤로가기");
-    }
     private static void printFSSMenu() {
         System.out.println("***************** FSS MENU *****************");
-        System.out.println("1. 상품판매허가");
+        System.out.println("1. 로그인");
+        System.out.println("2. 금감원 등록하기");
         System.out.println("r. 뒤로가기");
     }
     private static void printEmployeeLoginMenu() {
         System.out.println("***************** EMPLOYEE LOGIN MENU *****************");
         System.out.println("1. 로그인");
-        System.out.println("2. 등록하기");
+        System.out.println("2. 직원 등록하기");
         System.out.println("r. 뒤로가기");
     }
     private static void exitProgram() {
         System.out.println("프로그램 종료");
         System.exit(0);
-    }
-    private static void payment() {
-    }
-
-    private static void cancellationInsurance() {
-    }
-
-    private static void policyRenewalDate() {
-    }
-
-    private static void compensation() {
-    }
-
-    private static void accidentReceipt() {
     }
 }

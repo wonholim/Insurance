@@ -1,7 +1,7 @@
 package service;
 
-import customer.Customer;
-import team.Team;
+import domain.customer.Customer;
+import domain.team.Team;
 
 import java.util.List;
 
