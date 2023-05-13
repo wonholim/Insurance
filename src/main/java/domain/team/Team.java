@@ -7,52 +7,76 @@ import java.util.List;
 
 public class Team extends TeamImpl {
 
-	private domain.customer.Customer Customer;
-	private int teamID;
-	private List<Team> teamList;
-	public PolicyRenewalDate m_PolicyRenewalDate;
-	public CancellationInsurance m_CancellationInsurance;
-	public InsuranceProduct m_InsuranceProduct;
-	public LossInvestigation m_LossInvestigation;
-	public ReportAccident m_ReportAccident;
-	public Payment m_Payment;
-	public Compensation m_Compensation;
-	public Validation m_Validation;
+	private int teamNumber;
+	private String name;
+	private String ID;
+	private String password;
+	private String registraionNumber;
+	private String phoneNum;
+	private int age;
+	private int employeeRank;
 
-	public Team(){
-
+	public int getTeamNumber() {
+		return teamNumber;
 	}
 
-	public boolean apply(){
-		return false;
+	public void setTeamNumber(int teamNumber) {
+		this.teamNumber = teamNumber;
 	}
 
-	public boolean cancellation(){
-		return false;
+	public String getName() {
+		return name;
 	}
 
-	public boolean lossInvest(){
-		return false;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public boolean payment(){
-		return false;
+	public String getID() {
+		return ID;
 	}
 
-	public boolean product(){
-		return false;
+	public void setID(String ID) {
+		this.ID = ID;
 	}
 
-	public boolean renewalDate(){
-		return false;
+	public String getPassword() {
+		return password;
 	}
 
-	public boolean report(){
-		return false;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
-	public boolean validate(){
-		return false;
+	public String getRegistraionNumber() {
+		return registraionNumber;
 	}
 
+	public void setRegistraionNumber(String registraionNumber) {
+		this.registraionNumber = registraionNumber;
+	}
+
+	public String getPhoneNum() {
+		return phoneNum;
+	}
+
+	public void setPhoneNum(String phoneNum) {
+		this.phoneNum = phoneNum;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	public int getEmployeeRank() {
+		return employeeRank;
+	}
+
+	public void setEmployeeRank(int employeeRank) {
+		this.employeeRank = employeeRank;
+	}
 }

@@ -7,7 +7,7 @@ import java.util.List;
 public class Customer extends CustomerListImpl{
     private int age;
     private String carModel;
-    private int carModelYear;
+    private String carModelYear;
     private String carNum;
     private String customerID;
     private String driverLicense;
@@ -33,10 +33,10 @@ public class Customer extends CustomerListImpl{
     public void setCarModel(String carModel) {
         this.carModel = carModel;
     }
-    public int getCarModelYear() {
+    public String getCarModelYear() {
         return carModelYear;
     }
-    public void setCarModelYear(int carModelYear) {
+    public void setCarModelYear(String carModelYear) {
         this.carModelYear = carModelYear;
     }
     public String getCarNum() {
