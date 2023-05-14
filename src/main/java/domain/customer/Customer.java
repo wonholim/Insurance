@@ -4,7 +4,7 @@ import domain.contract.Contract;
 
 import java.util.List;
 
-public class Customer extends CustomerListImpl{
+public class Customer {
     private int age;
     private String carModel;
     private String carModelYear;

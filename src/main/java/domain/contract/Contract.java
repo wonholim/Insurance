@@ -2,7 +2,7 @@ package domain.contract;
 
 import domain.customer.Customer;
 
-public class Contract extends ContractListImpl{
+public class Contract {
 
     private Customer customer;
     private String date;

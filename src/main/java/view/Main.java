@@ -8,33 +8,30 @@ import domain.fss.FSS;
 import domain.team.Team;
 
 import java.io.*;
+
 public class Main {
     public static void main(String[] args) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
-            while (true) {
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in))) {
+            while (true) { // 깊을 수록 안 좋은 코드
                 printFirstMenu();
-                String select = br.readLine().trim();
+                String select = bufferedReader.readLine().trim();
                 switch (select) {
                     case "1":
                         One:
                         while(true) {
                             printCustomerLoginMenu();
-                            select = br.readLine().trim();
+                            select = bufferedReader.readLine().trim();
                             switch (select) {
                                 case "1":
-                                    String userName = printCustomerLogin(br);
+                                    String userName = printCustomerLogin(bufferedReader);
                                     if (userName != null) {
                                        CustomerLoginView customerLoginView = new CustomerLoginView(userName);
-                                       customerLoginView.customerSelect(br);
+                                       customerLoginView.customerSelect(bufferedReader);
                                     }
                                     break;
-                                case "2":
-                                    registerCustomer(br);
-                                    break;
-                                case "r":
-                                    break One;
-                                default:
-                                    System.out.println("입력값이 올바르지 않습니다.");
+                                case "2": registerCustomer(bufferedReader); break;
+                                case "r": break One;
+                                default : System.out.println("입력값이 올바르지 않습니다.");
                             }
                         }
                         break;
@@ -42,22 +39,18 @@ public class Main {
                         Two:
                         while(true) {
                             printEmployeeLoginMenu();
-                            select = br.readLine().trim();
+                            select = bufferedReader.readLine().trim();
                             switch (select) {
                                 case "1":
-                                    String employeeName = printEmployeeLogin(br);
+                                    String employeeName = printEmployeeLogin(bufferedReader);
                                     if (employeeName != null) {
                                         EmployeeLoginView employeeLoginView = new EmployeeLoginView(employeeName);
-                                        employeeLoginView.employeeSelect(br);
+                                        employeeLoginView.employeeSelect(bufferedReader);
                                     }
                                     break;
-                                case "2":
-                                    registerEmployee(br);
-                                    break;
-                                case "r":
-                                    break Two;
-                                default:
-                                    System.out.println("입력값이 올바르지 않습니다.");
+                                case "2": registerEmployee(bufferedReader); break;
+                                case "r": break Two;
+                                default: System.out.println("입력값이 올바르지 않습니다.");
                             }
                         }
                         break;
@@ -65,30 +58,23 @@ public class Main {
                         Three:
                         while(true) {
                             printFSSLoginMenu();
-                            select = br.readLine().trim();
+                            select = bufferedReader.readLine().trim();
                             switch (select) {
                                 case "1":
-                                    String FSSName = printFSSLogin(br);
+                                    String FSSName = printFSSLogin(bufferedReader);
                                     if(FSSName != null) {
                                         FSSLoginView fssLoginView = new FSSLoginView(FSSName);
-                                        fssLoginView.fssSelect(br);
+                                        fssLoginView.fssSelect(bufferedReader);
                                     }
                                     break;
-                                case "2":
-                                    registerFSS(br);
-                                    break;
-                                case "r":
-                                    break Three;
-                                default:
-                                    System.out.println("입력값이 올바르지 않습니다.");
+                                case "2": registerFSS(bufferedReader); break;
+                                case "r": break Three;
+                                default : System.out.println("입력값이 올바르지 않습니다.");
                             }
                         }
                         break;
-                    case "x":
-                        exitProgram();
-                        return;
-                    default:
-                        System.out.println("입력값이 올바르지 않습니다.");
+                    case "x": exitProgram(); return;
+                    default : System.out.println("입력값이 올바르지 않습니다.");
                 }
             }
         } catch (IOException e) {
@@ -143,6 +129,7 @@ public class Main {
             employee[0] = br.readLine().trim();
             System.out.print("Password : ");
             employee[1] = br.readLine().trim();
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

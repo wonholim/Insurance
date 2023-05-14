@@ -1,4 +1,7 @@
-package domain.customer;
+package service;
+
+import domain.customer.Customer;
+
 public class Enrollment extends Customer {
 
     private int drvingExperience;

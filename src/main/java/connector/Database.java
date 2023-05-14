@@ -100,7 +100,6 @@ public class Database {
                 }
             }
         } catch (SQLException e) {
-            // 예외 처리
             e.printStackTrace();
         }
         return false;
