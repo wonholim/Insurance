@@ -104,4 +104,34 @@ public class Database {
         }
         return false;
     }
+    public boolean isRegister(String query, String userName) {
+        try (PreparedStatement statement = con.prepareStatement(query)) {
+            statement.setString(1, userName);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    protected boolean checkUnderWriting(String query, String[] employee) {
+        try (PreparedStatement statement = con.prepareStatement(query)) {
+            statement.setString(1, employee[0]);
+            statement.setInt(2, Integer.parseInt(employee[1]));
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

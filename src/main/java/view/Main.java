@@ -12,7 +12,7 @@ import java.io.*;
 public class Main {
     public static void main(String[] args) {
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in))) {
-            while (true) { // 깊을 수록 안 좋은 코드
+            while (true) {
                 printFirstMenu();
                 String select = bufferedReader.readLine().trim();
                 switch (select) {
