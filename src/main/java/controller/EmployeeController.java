@@ -2,8 +2,10 @@ package controller;
 
 import dao.EmployeeDAO;
 import domain.customer.Customer;
+import domain.insurance.Accident;
 import domain.insurance.Car;
 import domain.insurance.Driver;
+import domain.insurance.Injury;
 import domain.team.Team;
 
 import java.util.List;
@@ -42,5 +44,33 @@ public class EmployeeController {
 
     public boolean customersDriverUnderWritingUpdate(Driver driver) {
         return new EmployeeDAO().customersDriverUnderWritingUpate(driver);
+    }
+
+    public boolean checkAccidentTeam(String employeeName) {
+        return new EmployeeDAO().checkAccidentTeam(employeeName);
+    }
+
+    public List<Accident> getTmpAccidentList() {
+        return new EmployeeDAO().getTmpAccidentList();
+    }
+
+    public boolean tmpAccidentInsuranceDelete(Accident accident) {
+        return new EmployeeDAO().tmpAccidentInsuranceDelete(accident);
+    }
+
+    public boolean accidentInsuranceUpdate(Accident accident) {
+        return new EmployeeDAO().accidentInsuranceUpdate(accident);
+    }
+
+    public List<Injury> getTmpInjuryList() {
+        return new EmployeeDAO().getTmpInjuryList();
+    }
+
+    public boolean tmpInjuryInsuranceDelete(Injury injury) {
+        return new EmployeeDAO().tmpInjuryInsuranceDelete(injury);
+    }
+
+    public boolean InjuryInsuranceUpdate(Injury injury) {
+        return new EmployeeDAO().InjuryInsuranceUpdate(injury);
     }
 }

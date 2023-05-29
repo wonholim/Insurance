@@ -5,7 +5,7 @@ import service.*;
 
 import java.util.List;
 
-public class Team extends TeamImpl {
+public class Team{
 
 	private int teamNumber;
 	private String name;

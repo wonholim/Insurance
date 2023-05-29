@@ -1,8 +1,10 @@
 package dao;
 
 import connector.Database;
+import domain.insurance.Accident;
 import domain.insurance.Car;
 import domain.insurance.Driver;
+import domain.insurance.Injury;
 import domain.team.Team;
 
 import java.sql.ResultSet;
@@ -33,7 +35,7 @@ public class EmployeeDAO extends Database {
 
     public boolean checkUnderWriting(String employeeName) {
         String query = "SELECT EmployeeID, EmployeePassword FROM Employee WHERE EmployeeID = ? AND TeamNum = ?";
-        if(super.checkUnderWriting(query, new String[]{employeeName, "3"})) return true;
+        if(super.checkTeam(query, new String[]{employeeName, "3"})) return true;
         return false;
     }
 
@@ -41,7 +43,7 @@ public class EmployeeDAO extends Database {
             String query = "SELECT * FROM TmpCarInsuranceProduct;";
             try (ResultSet rs = super.retrieve(query)) {
                 List<Car> carList = new ArrayList<>();
-                if(rs.next()) {
+                while(rs.next()) {
                     Car car = new Car(null);
                     car.setProductID(rs.getString("ProductID"));
                     car.setCustomerID(rs.getString("CustomerID"));
@@ -67,12 +69,21 @@ public class EmployeeDAO extends Database {
     }
 
     public boolean customersCarUnderWritingUpdate(Car car) {
+        String query = "SELECT EmployeeID FROM Employee WHERE TeamNum = 2 ORDER BY RAND() LIMIT 2";
+        List<String> teamID = new ArrayList<>();
+        try (ResultSet rs = super.retrieve(query)) {
+            while (rs.next()) {
+                teamID.add(rs.getString("EmployeeID"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         LocalDate currentDate = LocalDate.now();
         LocalDate dateIn10Years = currentDate.plusYears(10);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String query = "INSERT INTO CarInsuranceProduct (ProductID, CustomerID, CustomerName, PhoneNum, DriverLicense, CarModel, CarNum, Price, EmployeeOne, EmployeeTwo, subcriptionDate, coverageExpirationDate) VALUES ('"
+        query = "INSERT INTO CarInsuranceProduct (ProductID, CustomerID, CustomerName, PhoneNum, DriverLicense, CarModel, CarNum, Price, EmployeeOne, EmployeeTwo, subcriptionDate, coverageExpirationDate) VALUES ('"
                 + car.getProductID() + "', '" + car.getCustomerID() + "', '" + car.getCustomerName() + "', '"
-                + car.getPhoneNum() + "', '" + car.getDriverLicense() + "', '" + car.getCarModel() + "', '" + car.getCarNum() + "', " + car.getPrice() + ", null, null, '"
+                + car.getPhoneNum() + "', '" + car.getDriverLicense() + "', '" + car.getCarModel() + "', '" + car.getCarNum() + "', " + car.getPrice() + ", '" + teamID.get(0)  + "', '" + teamID.get(1) +"', '"
                 + currentDate.format(formatter) + "', '" +  dateIn10Years.format(formatter) + "')";
         if(super.create(query)) return true;
         return false;
@@ -82,7 +93,7 @@ public class EmployeeDAO extends Database {
         String query = "SELECT * FROM TmpDriverInsuranceProduct;";
         try (ResultSet rs = super.retrieve(query)) {
             List<Driver> driverList = new ArrayList<>();
-            if(rs.next()) {
+            while(rs.next()) {
                 Driver driver = new Driver(null);
                 driver.setProductID(rs.getString("ProductID"));
                 driver.setCustomerID(rs.getString("CustomerID"));
@@ -106,13 +117,123 @@ public class EmployeeDAO extends Database {
     }
 
     public boolean customersDriverUnderWritingUpate(Driver driver) {
+        String query = "SELECT EmployeeID FROM Employee WHERE TeamNum = 2 ORDER BY RAND() LIMIT 2";
+        List<String> teamID = new ArrayList<>();
+        try (ResultSet rs = super.retrieve(query)) {
+            while (rs.next()) {
+                teamID.add(rs.getString("EmployeeID"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         LocalDate currentDate = LocalDate.now();
         LocalDate dateIn20Years = currentDate.plusYears(20);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String query = "INSERT INTO DriverInsuranceProduct (ProductID, CustomerID, CustomerName, PhoneNum, DriverLicense, Price, EmployeeOne, EmployeeTwo, subcriptionDate, coverageExpirationDate) VALUES ('"
+        query = "INSERT INTO DriverInsuranceProduct (ProductID, CustomerID, CustomerName, PhoneNum, DriverLicense, Price, EmployeeOne, EmployeeTwo, subcriptionDate, coverageExpirationDate) VALUES ('"
                 + driver.getProductID() + "', '" + driver.getCustomerID() + "', '" + driver.getCustomerName() + "', '"
-                + driver.getPhoneNum() + "', '" + driver.getDriverLicense() + "', " + driver.getPrice() + ", null, null, '"
+                + driver.getPhoneNum() + "', '" + driver.getDriverLicense() + "', " + driver.getPrice() + ", '" + teamID.get(0)  + "', '" + teamID.get(1) +"', '"
                 + currentDate.format(formatter) + "', '" +  dateIn20Years.format(formatter) + "')";
+        if(super.create(query)) return true;
+        return false;
+    }
+
+    public boolean checkAccidentTeam(String employeeName) {
+        String query = "SELECT EmployeeID, EmployeePassword FROM Employee WHERE EmployeeID = ? AND TeamNum = ?";
+        if(super.checkTeam(query, new String[]{employeeName, "1"})) return true;
+        return false;
+    }
+
+    public List<Accident> getTmpAccidentList() {
+        String query = "SELECT * FROM TmpAccidentInsurance;";
+        try (ResultSet rs = super.retrieve(query)) {
+            List<Accident> accidentList = new ArrayList<>();
+            while(rs.next()) {
+                Accident accident= new Accident();
+                accident.setCustomerID(rs.getString("CustomerID"));
+                accident.setCustomerName(rs.getString("CustomerName"));
+                accident.setPhoneNum(rs.getString("PhoneNum"));
+                accident.setRegistrationNumber(rs.getString("RegistrationNumber"));
+                accident.setLocation(rs.getString("Location"));
+                accident.setAccidentDate(rs.getString("AccidentDate"));
+                accident.setCarNum(rs.getString("CarNum"));
+                accident.setService(rs.getInt("Service"));
+                accidentList.add(accident);
+            }
+            return accidentList;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean accidentInsuranceUpdate(Accident accident) {
+        String query = "SELECT EmployeeID FROM Employee WHERE TeamNum = 1 ORDER BY RAND() LIMIT 2";
+        List<String> teamID = new ArrayList<>();
+        try (ResultSet rs = super.retrieve(query)) {
+            while (rs.next()) {
+                teamID.add(rs.getString("EmployeeID"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        LocalDate currentDate = LocalDate.now();
+        query = "INSERT INTO AccidentInsurance (CustomerID, CustomerName, RegistrationNumber, PhoneNum, Location, AccidentDate, CarNum,Service , ProcessinDate,EmployeeOne, EmployeeTwo) VALUES ('"
+                + accident.getCustomerID() + "', '" + accident.getCustomerName() + "', '" + accident.getRegistrationNumber() + "', '"
+                + accident.getPhoneNum() + "', '" + accident.getLocation() + "', '" + accident.getAccidentDate() + "', '"
+                + accident.getCarNum() + "' ," + accident.getService() + ", '" + currentDate.toString() +"', '" + teamID.get(0)  + "', '" + teamID.get(1) + "')";
+        if(super.create(query)) return true;
+        return false;
+    }
+
+    public boolean tmpAccidentInsuranceDelete(Accident accident) {
+        String query = "DELETE FROM TmpAccidentInsurance WHERE CustomerID = '" + accident.getCustomerID() + "';";
+        if(super.delete(query)) return true;
+        return false;
+    }
+
+    public List<Injury> getTmpInjuryList() {
+        String query = "SELECT * FROM TmpDriverInsurance;";
+        try (ResultSet rs = super.retrieve(query)) {
+            List<Injury> injuries = new ArrayList<>();
+            while(rs.next()) {
+                Injury injury= new Injury();
+                injury.setCustomerID(rs.getString("CustomerID"));
+                injury.setCustomerName(rs.getString("CustomerName"));
+                injury.setPhoneNum(rs.getString("PhoneNum"));
+                injury.setRegistrationNumber(rs.getString("RegistrationNumber"));
+                injury.setLocation(rs.getString("Location"));
+                injury.setInjuryDate(rs.getString("InjuryDate"));
+                injury.setDisease(rs.getString("Disease"));
+                injuries.add(injury);
+            }
+            return injuries;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean tmpInjuryInsuranceDelete(Injury injury) {
+        String query = "DELETE FROM TmpDriverInsurance WHERE CustomerID = '" + injury.getCustomerID() + "';";
+        if(super.delete(query)) return true;
+        return false;
+    }
+
+    public boolean InjuryInsuranceUpdate(Injury injury) {
+        String query = "SELECT EmployeeID FROM Employee WHERE TeamNum = 1 ORDER BY RAND() LIMIT 2";
+        List<String> teamID = new ArrayList<>();
+        try (ResultSet rs = super.retrieve(query)) {
+            while (rs.next()) {
+                teamID.add(rs.getString("EmployeeID"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        LocalDate currentDate = LocalDate.now();
+        query = "INSERT INTO DriverInsurance (CustomerID, CustomerName, RegistrationNumber, PhoneNum, Location, InjuryDate, Disease, ProcessinDate , EmployeeOne, EmployeeTwo) VALUES ('"
+                + injury.getCustomerID() + "', '" + injury.getCustomerName() + "', '" + injury.getRegistrationNumber() + "', '"
+                + injury.getPhoneNum() + "', '" + injury.getLocation() + "', '" + injury.getInjuryDate() + "', '"
+                + injury.getDisease() + ", '" + currentDate.toString() +"', '" + teamID.get(0)  + "', '" + teamID.get(1) + "')";
         if(super.create(query)) return true;
         return false;
     }

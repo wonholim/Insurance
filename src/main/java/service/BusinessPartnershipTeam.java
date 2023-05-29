@@ -1,10 +1,8 @@
 package service;
 
-import domain.team.TeamImpl;
-
 import java.util.List;
 
-public class BusinessPartnershipTeam extends TeamImpl {
+public class BusinessPartnershipTeam{
 
 	private List BusinessPartnershipEmployeeList;
 

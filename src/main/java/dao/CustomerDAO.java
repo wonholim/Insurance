@@ -2,9 +2,14 @@ package dao;
 
 import connector.Database;
 import domain.customer.Customer;
+import domain.insurance.Accident;
+import domain.insurance.Injury;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class CustomerDAO extends Database {
 
@@ -85,7 +90,7 @@ public class CustomerDAO extends Database {
         String query = "SELECT * FROM CarInsuranceProduct WHERE CustomerID = '" + userName + "';";
         try (ResultSet rs = super.retrieve(query)) {
             if(rs.next()) {
-                line += " 자동차 보험 ";
+                line += " 자동차 보험(Car)";
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -93,11 +98,200 @@ public class CustomerDAO extends Database {
         query = "SELECT * FROM DriverInsuranceProduct WHERE CustomerID = '" + userName + "';";
         try (ResultSet rs = super.retrieve(query)) {
             if(rs.next()) {
-                line += " 운전자 보험 ";
+                line += " 운전자 보험(Driver)";
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return line;
+    }
+
+    public boolean checkInsuranceProduct(String[] user) {
+        String query = "SELECT CustomerID, CustomerPassword FROM Customer WHERE CustomerID = ? AND CustomerPassword = ?";
+        if(super.authentication(query, user)) return true;
+        return false;
+    }
+
+    public long getPenaltyFeeInsuranceCar(String userName) {
+        String query = "SELECT subcriptionDate, coverageExpirationDate FROM CarInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        String subcriptionDate = "";
+        String coverageExpirationDate = "";
+        try (ResultSet rs = super.retrieve(query)) {
+            if(rs.next()) {
+                subcriptionDate = rs.getString("subcriptionDate");
+                coverageExpirationDate = rs.getString("coverageExpirationDate");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        LocalDate signUpDate = LocalDate.parse(subcriptionDate);
+        LocalDate lastUpDate = LocalDate.parse(coverageExpirationDate);
+        LocalDate currentDate = LocalDate.now();
+        if(ChronoUnit.DAYS.between(signUpDate, currentDate) <= 15){
+            return 0;
+        }else{
+            return (long) 1000000 * Math.toIntExact(ChronoUnit.YEARS.between(currentDate, lastUpDate));
+        }
+    }
+
+    public long getPenaltyFeeInsuranceDriver(String userName) {
+        String query = "SELECT subcriptionDate, coverageExpirationDate FROM DriverInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        String subcriptionDate = "";
+        String coverageExpirationDate = "";
+        try (ResultSet rs = super.retrieve(query)) {
+            if(rs.next()) {
+                subcriptionDate = rs.getString("subcriptionDate");
+                coverageExpirationDate = rs.getString("coverageExpirationDate");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        LocalDate signUpDate = LocalDate.parse(subcriptionDate);
+        LocalDate lastUpDate = LocalDate.parse(coverageExpirationDate);
+        LocalDate currentDate = LocalDate.now();
+        if(ChronoUnit.DAYS.between(signUpDate, currentDate) <= 15){
+            return 0;
+        }else{
+            return (long) 1000000 * Math.toIntExact(ChronoUnit.YEARS.between(currentDate, lastUpDate));
+        }
+    }
+
+    public boolean cancellationCarInsurance(String userName) {
+        String query = "DELETE FROM carInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        if(super.delete(query)) return true;
+        return false;
+    }
+
+    public boolean cancellationDriverInsurance(String userName) {
+        String query = "DELETE FROM DriverInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        if(super.delete(query)) return true;
+        return false;
+    }
+
+    public boolean checkForExpriedCarInsurance(String userName) {
+        String query = "SELECT coverageExpirationDate FROM CarInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        String coverageExpirationDate = "";
+        try (ResultSet rs = super.retrieve(query)) {
+            if(rs.next()) {
+                coverageExpirationDate = rs.getString("coverageExpirationDate");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        LocalDate lastUpDate = LocalDate.parse(coverageExpirationDate);
+        LocalDate currentDate = LocalDate.now();
+        return currentDate.isAfter(lastUpDate);
+    }
+    public boolean checkForExpriedDriverInsurance(String userName) {
+        String query = "SELECT coverageExpirationDate FROM DriverInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        String coverageExpirationDate = "";
+        try (ResultSet rs = super.retrieve(query)) {
+            if(rs.next()) {
+                coverageExpirationDate = rs.getString("coverageExpirationDate");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        LocalDate lastUpDate = LocalDate.parse(coverageExpirationDate);
+        LocalDate currentDate = LocalDate.now();
+        return currentDate.isAfter(lastUpDate);
+    }
+
+    public boolean renewExpiredCarInsurance(String userName) {
+        String query = "SELECT coverageExpirationDate FROM CarInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        String coverageExpirationDate = "";
+        try (ResultSet rs = super.retrieve(query)) {
+            if(rs.next()) {
+                coverageExpirationDate = rs.getString("coverageExpirationDate");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        String lastUpDate = LocalDate.parse(coverageExpirationDate).plusYears(10).toString();
+        query = "UPDATE CarInsuranceProduct SET coverageExpirationDate = '" + lastUpDate + "' WHERE CustomerID = '" + userName + "';";
+        return super.update(query);
+    }
+
+    public boolean renewExpiredDriverInsurance(String userName) {
+        String query = "SELECT coverageExpirationDate FROM DriverInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        String coverageExpirationDate = "";
+        try (ResultSet rs = super.retrieve(query)) {
+            if(rs.next()) {
+                coverageExpirationDate = rs.getString("coverageExpirationDate");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        String lastUpDate = LocalDate.parse(coverageExpirationDate).plusYears(20).toString();
+        query = "UPDATE DriverInsuranceProduct SET coverageExpirationDate = '" + lastUpDate + "' WHERE CustomerID = '" + userName + "';";
+        return super.update(query);
+    }
+
+    public String[] getCarInsuranceInfromations(String userName) {
+        String query = "SELECT Price ,coverageExpirationDate FROM CarInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        String[] informations = new String[2];
+        try (ResultSet rs = super.retrieve(query)) {
+            if(rs.next()) {
+                informations[0] = "" + rs.getInt("Price");
+                informations[1] = rs.getString("coverageExpirationDate");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return informations;
+    }
+
+    public String[] getDriverInsuranceInformations(String userName) {
+        String query = "SELECT Price ,coverageExpirationDate FROM DriverInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        String[] informations = new String[2];
+        try (ResultSet rs = super.retrieve(query)) {
+            if(rs.next()) {
+                informations[0] = "" + rs.getInt("Price");
+                informations[1] = rs.getString("coverageExpirationDate");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return informations;
+    }
+
+    public boolean isAccidentAdd(String userName) {
+        String query = "SELECT CustomerID FROM TmpAccidentInsurance WHERE CustomerID = '" + userName + "';";
+        try (ResultSet rs = super.retrieve(query)) {
+            if(rs.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean isInjuryAdd(String userName) {
+        String query = "SELECT CustomerID FROM TmpDriverInsurance WHERE CustomerID = '" + userName + "';";
+        try (ResultSet rs = super.retrieve(query)) {
+            if(rs.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean AccidentAdd(Accident accident) {
+        String query = "INSERT INTO TmpAccidentInsurance (CustomerID, CustomerName, RegistrationNumber, PhoneNum, Location, AccidentDate, CarNum, Service) VALUES ('"
+                + accident.getCustomerID() + "', '" + accident.getCustomerName() + "', '" + accident.getRegistrationNumber() + "', '"
+                + accident.getPhoneNum() + "', '" + accident.getLocation() + "', '" + accident.getAccidentDate() + "', '" + accident.getCarNum() + "'," + accident.getService() + ")";
+        if(super.create(query)) return true;
+        return false;
+    }
+
+    public boolean injuryAdd(Injury injury) {
+        String query = "INSERT INTO TmpDriverInsurance (CustomerID, CustomerName, RegistrationNumber, PhoneNum, Location, InjuryDate, Disease) VALUES ('"
+                + injury.getCustomerID() + "', '" + injury.getCustomerName() + "', '" + injury.getRegistrationNumber() + "', '"
+                + injury.getPhoneNum() + "', '" + injury.getLocation() + "', '" + injury.getInjuryDate() + "', '" + injury.getDisease() + "')";
+        if(super.create(query)) return true;
+        return false;
     }
 }

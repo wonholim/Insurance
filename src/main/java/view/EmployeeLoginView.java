@@ -1,8 +1,10 @@
 package view;
 
 import controller.EmployeeController;
+import domain.insurance.Accident;
 import domain.insurance.Car;
 import domain.insurance.Driver;
+import domain.insurance.Injury;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -74,6 +76,63 @@ public class EmployeeLoginView {
                         }
                         break;
                     case "2":
+                        // 1. 사고처리 팀
+                        if(!new EmployeeController().checkAccidentTeam(employeeName)) {
+                            System.out.println("사고처리 팀만 사고처리를 수행할 수 있습니다.");
+                            break;
+                        }
+                        TwoOut:
+                        while(true) {
+                            printAccidentMenu();
+                            select = bufferedReader.readLine().trim();
+
+                            switch (select) {
+                                case "1":
+                                    List<Accident> accidents = new EmployeeController().getTmpAccidentList();
+                                    if (accidents.size() == 0) {
+                                        System.out.println("검증할 대상이 없습니다.");
+                                        break;
+                                    }
+                                    int accidentIndex = -1;
+                                    while (true) {
+                                        accidentIndex = printTmpAccidentCustomer(accidents, bufferedReader);
+                                        if (accidentIndex != -1) break;
+                                    }
+                                    if (!new EmployeeController().tmpAccidentInsuranceDelete(accidents.get(accidentIndex))) {
+                                        System.out.println("DB 삭제에 오류가 발생했습니다.");
+                                        break;
+                                    }
+                                    if (!new EmployeeController().accidentInsuranceUpdate(accidents.get(accidentIndex))) {
+                                        System.out.println("DB 업데이트에 오류가 발생했습니다.");
+                                        break;
+                                    }
+                                    System.out.println("사고처리를 완료 했습니다.");
+                                    break;
+                                case "2":
+                                    List<Injury> injuries = new EmployeeController().getTmpInjuryList();
+                                    if (injuries.size() == 0) {
+                                        System.out.println("검증할 대상이 없습니다.");
+                                        break;
+                                    }
+                                    int injuryIndex = -1;
+                                    while (true) {
+                                        injuryIndex = printTmpInjuryCustomer(injuries, bufferedReader);
+                                        if (injuryIndex != -1) break;
+                                    }
+                                    if (!new EmployeeController().tmpInjuryInsuranceDelete(injuries.get(injuryIndex))) {
+                                        System.out.println("DB 삭제에 오류가 발생했습니다.");
+                                        break;
+                                    }
+                                    if (!new EmployeeController().InjuryInsuranceUpdate(injuries.get(injuryIndex))) {
+                                        System.out.println("DB 업데이트에 오류가 발생했습니다.");
+                                        break;
+                                    }
+                                    System.out.println("사고처리를 완료 했습니다.");
+                                    break;
+                                case "r": break TwoOut;
+                                default: System.out.println("입력값이 올바르지 않습니다.");
+                            }
+                        }
                         break;
                     case "3":
                         break;
@@ -93,6 +152,43 @@ public class EmployeeLoginView {
             throw new RuntimeException(e);
         }
     }
+
+    private int printTmpInjuryCustomer(List<Injury> injuries, BufferedReader bufferedReader) throws IOException {
+        System.out.println("***************** Injury Customers *****************");
+        int count = 0;
+        for(Injury list : injuries){
+            System.out.println(count++ + " | 이름 : " + list.getCustomerName() + " | 주민 등록 번호 : "
+                    + list.getRegistrationNumber() + " | 전화 번호 : " + list.getPhoneNum()
+                    + " | 사고 지역 : " + list.getLocation() + " | 병명 : " + list.getDisease());
+        }
+        System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
+        int select = Integer.parseInt(bufferedReader.readLine());
+        if(select < 0 || select > count - 1) return -1;
+        return select;
+    }
+
+    private int printTmpAccidentCustomer(List<Accident> accidents, BufferedReader bufferedReader) throws IOException {
+        System.out.println("***************** Accident Customers *****************");
+        int count = 0;
+        for(Accident list : accidents){
+            System.out.println(count++ + " | 이름 : " + list.getCustomerName() + " | 주민 등록 번호 : "
+                    + list.getRegistrationNumber() + " | 전화 번호 : " + list.getPhoneNum() + " | 사고 날짜 : "
+                    + list.getAccidentDate() + " | 출동 여부 (1. 현장 출동 2. 긴급 출동) " + list.getService()
+                    + " | 사고 지역 : " + list.getLocation() + " | 차 번호 : " + list.getCarNum());
+        }
+        System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
+        int select = Integer.parseInt(bufferedReader.readLine());
+        if(select < 0 || select > count - 1) return -1;
+        return select;
+    }
+
+    private void printAccidentMenu() {
+        System.out.println("***************** Accident Handling *****************");
+        System.out.println("1. 사고 처리");
+        System.out.println("2. 상해 처리");
+        System.out.println("r. 뒤로가기");
+    }
+
     private int printTmpDriverCustomer(List<Driver> list, BufferedReader bufferedReader) throws IOException {
         System.out.println("***************** Driver UnderWriting *****************");
         int count = 0;

@@ -119,7 +119,7 @@ public class Database {
         return false;
     }
 
-    protected boolean checkUnderWriting(String query, String[] employee) {
+    protected boolean checkTeam(String query, String[] employee) {
         try (PreparedStatement statement = con.prepareStatement(query)) {
             statement.setString(1, employee[0]);
             statement.setInt(2, Integer.parseInt(employee[1]));
