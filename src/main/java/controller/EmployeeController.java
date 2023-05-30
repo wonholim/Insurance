@@ -1,8 +1,9 @@
 package controller;
 
 import dao.EmployeeDAO;
-import domain.insurance.*;
-import domain.team.Team;
+import insurance.*;
+import team.Team;
+
 
 import java.util.List;
 
@@ -88,5 +89,17 @@ public class EmployeeController {
 
     public boolean accidentReportDelete(AccidentReport accidentReport) {
         return new EmployeeDAO().accidentReportDelete(accidentReport);
+    }
+
+    public List<InjuryReport> getInjuryList(int i) {
+        return new EmployeeDAO().getInjuryList(i);
+    }
+
+    public boolean injuryReportUpdate(InjuryReport injuryReport, String employeeName) {
+        return new EmployeeDAO().injuryReportUpdate(injuryReport, employeeName);
+    }
+
+    public boolean injuryReportDelete(InjuryReport injuryReport) {
+        return new EmployeeDAO().injuryReportDelete(injuryReport);
     }
 }

@@ -1,8 +1,9 @@
 package dao;
 
 import connector.Database;
-import domain.insurance.*;
-import domain.team.Team;
+import insurance.*;
+import team.Team;
+import insurance.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -283,6 +284,43 @@ public class EmployeeDAO extends Database {
 
     public boolean accidentReportDelete(AccidentReport accidentReport) {
         String query = "DELETE FROM RequestCarInsurance WHERE CustomerID = '" + accidentReport.getCustomerID() + "';";
+        return super.delete(query);
+    }
+
+    public List<InjuryReport> getInjuryList(int i) {
+        String query = "";
+        if(i == 0) query = "SELECT * FROM RequestInjuryInsurance WHERE EmployeeOne IS NULL;";
+        else if(i == 1) query = "SELECT * FROM RequestInjuryInsurance WHERE EmployeeOne IS NOT NULL AND EmployeeTwo IS NULL;";
+        else  query = "SELECT * FROM RequestInjuryInsurance WHERE EmployeeOne IS NOT NULL AND EmployeeTwo IS NOT NULL AND EmployeeThree IS NULL;";
+        try (ResultSet rs = super.retrieve(query)) {
+            List<InjuryReport> injuryReports = new ArrayList<>();
+            while(rs.next()) {
+                InjuryReport injuryReport= new InjuryReport();
+                injuryReport.setCustomerID(rs.getString("CustomerID"));
+                injuryReport.setSprain(rs.getInt("Sprain"));
+                injuryReport.setSimpleFracture(rs.getInt("SimpleFracture"));
+                injuryReport.setOpenFracture(rs.getInt("OpenFracture"));
+                injuryReport.setCut(rs.getInt("Cut"));
+                injuryReport.setCompensation(rs.getInt("Compensation"));
+                injuryReport.setEmployeeOne(rs.getString("EmployeeOne"));
+                injuryReport.setEmployeeTwo(rs.getString("EmployeeTwo"));
+                injuryReport.setEmployeeThree(rs.getString("EmployeeThree"));
+                injuryReports.add(injuryReport);
+            }
+            return injuryReports;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean injuryReportUpdate(InjuryReport injuryReport, String employeeName) {
+        String query = "UPDATE RequestCarInsurance SET Compensation = '" + injuryReport.getCompensation() + "', EmployeeOne = '" + employeeName + "' WHERE CustomerID = '" + injuryReport.getCustomerID() + "';";
+        return super.update(query);
+    }
+
+    public boolean injuryReportDelete(InjuryReport injuryReport) {
+        String query = "DELETE FROM RequestInjuryInsurance WHERE CustomerID = '" + injuryReport.getCustomerID() + "';";
         return super.delete(query);
     }
 }

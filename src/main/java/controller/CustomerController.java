@@ -1,8 +1,8 @@
 package controller;
 
-import domain.customer.Customer;
+import customer.Customer;
 import dao.CustomerDAO;
-import domain.insurance.*;
+import insurance.*;
 
 public class CustomerController {
     private Car car;
@@ -108,5 +108,9 @@ public class CustomerController {
 
     public boolean isInjuryAddProcess(String userName) {
         return new CustomerDAO().isInjuryAddProcess(userName);
+    }
+
+    public boolean requestInjuryInsurancePayout(InjuryReport injuryReports) {
+        return new CustomerDAO().requestInjuryInsurancePayout(injuryReports);
     }
 }

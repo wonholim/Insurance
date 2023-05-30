@@ -1,7 +1,7 @@
 package dao;
 
 import connector.Database;
-import domain.fss.FSS;
+import fss.FSS;
 
 public class FSSDAO extends Database {
     public FSSDAO() {

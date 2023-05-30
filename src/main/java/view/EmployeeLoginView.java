@@ -1,7 +1,8 @@
 package view;
 
 import controller.EmployeeController;
-import domain.insurance.*;
+import insurance.*;
+import insurance.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -73,7 +74,6 @@ public class EmployeeLoginView {
                         }
                         break;
                     case "2":
-                        // 1. 사고처리 팀
                         if(!new EmployeeController().checkAccidentTeam(employeeName)) {
                             System.out.println("사고처리 팀만 사고처리를 수행할 수 있습니다.");
                             break;
@@ -132,70 +132,143 @@ public class EmployeeLoginView {
                         }
                         break;
                     case "3":
-                        // 테스트 안해봄
                         if(!new EmployeeController().checkLossEvaluationTeam(employeeName)) {
                             System.out.println("손해사정 팀만 손해조사를 수행할 수 있습니다.");
                             break;
                         }
-                        List<AccidentReport> accidentReports = new EmployeeController().getAccidentList(1);
-                        if (accidentReports.size() == 0) {
-                            System.out.println("손해 조사할 대상이 없습니다.");
-                            break;
+                        ThreeOut:
+                        while(true) {
+                            printLossEvaluation();
+                            select = bufferedReader.readLine().trim();
+                            switch(select) {
+                                case "1":
+                                    List<AccidentReport> accidentReports = new EmployeeController().getAccidentList(1);
+                                    if (accidentReports.size() == 0) {
+                                        System.out.println("손해 조사할 대상이 없습니다.");
+                                        break;
+                                    }
+                                    int accidentReportIndex = -1;
+                                    while (true) {
+                                        accidentReportIndex = printAccidentReportCustomer(accidentReports, bufferedReader);
+                                        if (accidentReportIndex != -1) break;
+                                    }
+                                    if (!new EmployeeController().accidentReportUpdate(accidentReports.get(accidentReportIndex), employeeName)) {
+                                        System.out.println("DB 업데이트에 오류가 발생했습니다.");
+                                        break;
+                                    }
+                                    System.out.println("손해 조사 처리를 완료 했습니다.");
+                                case "2":
+                                    List<InjuryReport> injuryReports = new EmployeeController().getInjuryList(1);
+                                    if (injuryReports.size() == 0) {
+                                        System.out.println("손해 조사할 대상이 없습니다.");
+                                        break;
+                                    }
+                                    int injuryReportIndex = -1;
+                                    while (true) {
+                                        injuryReportIndex = printInjuryReportCustomer(injuryReports, bufferedReader);
+                                        if (injuryReportIndex != -1) break;
+                                    }
+                                    if (!new EmployeeController().injuryReportUpdate(injuryReports.get(injuryReportIndex), employeeName)) {
+                                        System.out.println("DB 업데이트에 오류가 발생했습니다.");
+                                        break;
+                                    }
+                                    System.out.println("손해 조사 처리를 완료 했습니다.");
+                                case "r": break ThreeOut;
+                                default: System.out.println("입력값이 올바르지 않습니다.");
+                            }
                         }
-                        int accidentReportIndex = -1;
-                        while (true) {
-                            accidentReportIndex = printAccidentReportCustomer(accidentReports, bufferedReader);
-                            if (accidentReportIndex != -1) break;
-                        }
-                        if (!new EmployeeController().accidentReportUpdate(accidentReports.get(accidentReportIndex), employeeName)) {
-                            System.out.println("DB 업데이트에 오류가 발생했습니다.");
-                            break;
-                        }
-                        System.out.println(" 손해 조사 처리를 완료 했습니다.");
                         break;
                     case "4":
-                        // 손대야함
                         if(!new EmployeeController().checkLossEvaluationTeam(employeeName)) {
                             System.out.println("손해사정 팀만 손해조사를 수행할 수 있습니다.");
                             break;
                         }
-                        List<AccidentReport> accidentList = new EmployeeController().getAccidentList(2);
-                        if (accidentList.size() == 0) {
-                            System.out.println("손해 조사할 대상이 없습니다.");
-                            break;
+                        FourOut:
+                        while(true) {
+                            select = bufferedReader.readLine().trim();
+                            switch (select) {
+                                case "1":
+                                    List<AccidentReport> accidentList = new EmployeeController().getAccidentList(2);
+                                    if (accidentList.size() == 0) {
+                                        System.out.println("손해 조사할 대상이 없습니다.");
+                                        break;
+                                    }
+                                    int accidentListIndex = -1;
+                                    while (true) {
+                                        accidentListIndex = printAccidentReportLossEvaluationCustomer(accidentList, bufferedReader);
+                                        if (accidentListIndex != -1) break;
+                                    }
+                                    if (!new EmployeeController().accidentReportUpdate(accidentList.get(accidentListIndex), employeeName)) {
+                                        System.out.println("DB 업데이트에 오류가 발생했습니다.");
+                                        break;
+                                    }
+                                    System.out.println(" 손해 사정 처리를 완료 했습니다.");
+                                case "2":
+                                    List<InjuryReport> injuryReports = new EmployeeController().getInjuryList(2);
+                                    if (injuryReports.size() == 0) {
+                                        System.out.println("손해 조사할 대상이 없습니다.");
+                                        break;
+                                    }
+                                    int injuryReportIndex = -1;
+                                    while (true) {
+                                        injuryReportIndex = printInjuryReportLossEvaluationCustomer(injuryReports, bufferedReader);
+                                        if (injuryReportIndex != -1) break;
+                                    }
+                                    if (!new EmployeeController().injuryReportUpdate(injuryReports.get(injuryReportIndex), employeeName)) {
+                                        System.out.println("DB 업데이트에 오류가 발생했습니다.");
+                                        break;
+                                    }
+                                    System.out.println("손해 사정 처리를 완료 했습니다.");
+                                case "r": break FourOut;
+                                default: System.out.println("입력값이 올바르지 않습니다.");
+                            }
                         }
-                        int accidentListIndex = -1;
-                        while (true) {
-                            accidentListIndex = printAccidentReportLossEvaluationCustomer(accidentList, bufferedReader);
-                            if (accidentListIndex != -1) break;
-                        }
-                        if (!new EmployeeController().accidentReportUpdate(accidentList.get(accidentListIndex), employeeName)) {
-                            System.out.println("DB 업데이트에 오류가 발생했습니다.");
-                            break;
-                        }
-                        System.out.println(" 손해 사정 처리를 완료 했습니다.");
                         break;
                     case "5":
-                        // 테스트 해야함
                         if(!new EmployeeController().checkClaimProcessingTeam(employeeName)) {
                             System.out.println("보상 처리 팀만 보험금 지급을 수행할 수 있습니다.");
                             break;
                         }
-                        List<AccidentReport> list = new EmployeeController().getAccidentList(3);
-                        if (list.size() == 0) {
-                            System.out.println("보험금을 지급할 대상이 없습니다.");
-                            break;
+                        FiveOut:
+                        while(true) {
+                            select = bufferedReader.readLine().trim();
+                            switch (select) {
+                                case "1":
+                                    List<AccidentReport> list = new EmployeeController().getAccidentList(3);
+                                    if (list.size() == 0) {
+                                        System.out.println("보험금을 지급할 대상이 없습니다.");
+                                        break;
+                                    }
+                                    int accidentIndex = -1;
+                                    while (true) {
+                                        accidentIndex = printCarCompensationCustomer(list, bufferedReader);
+                                        if (accidentIndex != -1) break;
+                                    }
+                                    if (!new EmployeeController().accidentReportDelete(list.get(accidentIndex))) {
+                                        System.out.println("DB 업데이트에 오류가 발생했습니다.");
+                                        break;
+                                    }
+                                    System.out.println(list.get(accidentIndex).getCompensation() + "원 보험금 지급을 완료 했습니다.");
+                                case "2":
+                                    List<InjuryReport> injuryReports = new EmployeeController().getInjuryList(3);
+                                    if (injuryReports.size() == 0) {
+                                        System.out.println("보험금을 지급할 대상이 없습니다.");
+                                        break;
+                                    }
+                                    int injuryIndex = -1;
+                                    while (true) {
+                                        injuryIndex = printInjuryCompensationCustomer(injuryReports, bufferedReader);
+                                        if (injuryIndex != -1) break;
+                                    }
+                                    if (!new EmployeeController().injuryReportDelete(injuryReports.get(injuryIndex))) {
+                                        System.out.println("DB 업데이트에 오류가 발생했습니다.");
+                                        break;
+                                    }
+                                    System.out.println(injuryReports.get(injuryIndex).getCompensation() + "원 보험금 지급을 완료 했습니다.");
+                                case "r": break FiveOut;
+                                default: System.out.println("입력값이 올바르지 않습니다.");
+                            }
                         }
-                        int accidentIndex = -1;
-                        while (true) {
-                            accidentIndex = printCompensationCustomer(list, bufferedReader);
-                            if (accidentIndex != -1) break;
-                        }
-                        if (!new EmployeeController().accidentReportDelete(list.get(accidentIndex))) {
-                            System.out.println("DB 업데이트에 오류가 발생했습니다.");
-                            break;
-                        }
-                        System.out.println(list.get(accidentIndex).getCompensation() + "원 보험금 지급을 완료 했습니다.");
                         break;
                     case "6":
                         break;
@@ -209,6 +282,69 @@ public class EmployeeLoginView {
             throw new RuntimeException(e);
         }
     }
+
+    private int printInjuryCompensationCustomer(List<InjuryReport> injuryReports, BufferedReader bufferedReader) throws IOException {
+        System.out.println("***************** Compensation Customers *****************");
+        int count = 0;
+        for(InjuryReport list : injuryReports){
+            System.out.println(count++ + " | 아이디 : " + list.getCustomerID() + "최종 보상금 : " + list.getCompensation());
+        }
+        System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
+        int select = Integer.parseInt(bufferedReader.readLine().trim());
+        if(select < 0 || select > count - 1) return -1;
+        return select;
+    }
+
+    private int printInjuryReportLossEvaluationCustomer(List<InjuryReport> injuryReports, BufferedReader bufferedReader) throws IOException {
+        System.out.println("***************** AccidentReport Customers *****************");
+        int count = 0;
+        for(InjuryReport list : injuryReports){
+            System.out.println(count++ + " | 아이디 : " + list.getCustomerID() + " | 염좌 여부 (0. 없음 1. 있음) : "
+                    + list.getSprain() + " | 단순 골절 (0. 없음 1. 있음) : " + list.getSimpleFracture()
+                    + " | 개방성 골절 (0. 없음 1. 있음) : " + list.getOpenFracture() + " | 절단 여부 (0. 없음 1. 있음) : " + list.getCut()
+                    + "자동 계산 보상금 : " + calculateInjury(list));
+            list.setCompensation(list.getCompensation() - 100000);
+        }
+        System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
+        int select = Integer.parseInt(bufferedReader.readLine());
+        if(select < 0 || select > count - 1) return -1;
+        // 손해 사정 처리
+        System.out.println("과진료 보상금 차감");
+        return select;
+    }
+
+    private int printInjuryReportCustomer(List<InjuryReport> injuryReports, BufferedReader bufferedReader) throws IOException {
+        System.out.println("***************** InjuryReport Customers *****************");
+        int count = 0;
+        for(InjuryReport list : injuryReports){
+            System.out.println(count++ + " | 아이디 : " + list.getCustomerID() + " | 염좌 여부 (0. 없음 1. 있음) : "
+                    + list.getSprain() + " | 단순 골절 (0. 없음 1. 있음) : " + list.getSimpleFracture()
+                    + " | 개방성 골절 (0. 없음 1. 있음) : " + list.getOpenFracture() + " | 절단 여부 (0. 없음 1. 있음) : " + list.getCut()
+                    + "자동 계산 보상금 : " + calculateInjury(list));
+            list.setCompensation(calculateInjury(list));
+        }
+        System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
+        int select = Integer.parseInt(bufferedReader.readLine());
+        if(select < 0 || select > count - 1) return -1;
+        return select;
+    }
+
+    private int calculateInjury(InjuryReport list) {
+        int sum = 100000;
+        sum += (list.getSprain() + 1) * sum;
+        sum += (list.getSimpleFracture() + 1) * sum;
+        sum += (list.getOpenFracture() + 1) * sum;
+        sum += (list.getCut()) * sum;
+        return sum;
+    }
+
+    private void printLossEvaluation() {
+        System.out.println("***************** LossEvaluation Handling *****************");
+        System.out.println("1. 사고 손해 조사");
+        System.out.println("2. 상해 손해 조사");
+        System.out.println("r. 뒤로가기");
+    }
+
     private int printAccidentReportLossEvaluationCustomer(List<AccidentReport> accidentReports, BufferedReader bufferedReader) throws IOException {
         System.out.println("***************** AccidentReport Customers *****************");
         int count = 0;
@@ -230,12 +366,11 @@ public class EmployeeLoginView {
         return select;
     }
 
-    private int printCompensationCustomer(List<AccidentReport> accidents, BufferedReader bufferedReader) throws IOException {
+    private int printCarCompensationCustomer(List<AccidentReport> accidents, BufferedReader bufferedReader) throws IOException {
         System.out.println("***************** Compensation Customers *****************");
         int count = 0;
         for(AccidentReport list : accidents){
-            System.out.println(count++ + " | 아이디 : " + list.getCustomerID() + "최종 보상금 : " + calculateCar(list));
-            list.setCompensation(calculateCar(list));
+            System.out.println(count++ + " | 아이디 : " + list.getCustomerID() + "최종 보상금 : " + list.getCompensation());
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
         int select = Integer.parseInt(bufferedReader.readLine());

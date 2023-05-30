@@ -1,12 +1,12 @@
 package dao;
 
 import connector.Database;
-import domain.customer.Customer;
-import domain.insurance.Accident;
-import domain.insurance.AccidentReport;
-import domain.insurance.Injury;
+import customer.Customer;
+import insurance.Accident;
+import insurance.AccidentReport;
+import insurance.Injury;
+import insurance.InjuryReport;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -327,5 +327,13 @@ public class CustomerDAO extends Database {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public boolean requestInjuryInsurancePayout(InjuryReport injuryReports) {
+        String query = "INSERT INTO RequestInjuryInsurance (CustomerID, Sprain, SimpleFracture, OpenFracture, Cut, Compensation, EmployeeOne, EmployeeTwo, EmployeeThree) VALUES ('"
+                + injuryReports.getCustomerID() + "', " + injuryReports.getSprain() + "', " + injuryReports.getSimpleFracture() + ", "
+                + injuryReports.getOpenFracture() + ", " + injuryReports.getCut() + ", " + injuryReports.getCompensation() + ", '" + injuryReports.getEmployeeOne() + "', '"
+                + injuryReports.getEmployeeTwo() + "', '" + injuryReports.getEmployeeThree() + "')";
+        return super.create(query);
     }
 }

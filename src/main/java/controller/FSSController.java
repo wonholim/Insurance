@@ -1,7 +1,7 @@
 package controller;
 
 import dao.FSSDAO;
-import domain.fss.FSS;
+import fss.FSS;
 
 public class FSSController {
     public boolean login(String[] fss) {

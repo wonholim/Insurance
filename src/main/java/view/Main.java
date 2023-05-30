@@ -3,9 +3,9 @@ package view;
 import controller.EmployeeController;
 import controller.FSSController;
 import controller.CustomerController;
-import domain.customer.Customer;
-import domain.fss.FSS;
-import domain.team.Team;
+import customer.Customer;
+import fss.FSS;
+import team.Team;
 
 import java.io.*;
 

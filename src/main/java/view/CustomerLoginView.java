@@ -1,10 +1,10 @@
 package view;
 
 import controller.CustomerController;
-import domain.insurance.Accident;
-import domain.insurance.AccidentReport;
-import domain.insurance.Injury;
-import domain.insurance.InjuryReport;
+import insurance.Accident;
+import insurance.AccidentReport;
+import insurance.Injury;
+import insurance.InjuryReport;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -359,12 +359,12 @@ public class CustomerLoginView {
                                     if(!new CustomerController().isInjuryAdd(userName)) {
                                         if(new CustomerController().isInjuryAddProcess(userName)){
                                             InjuryReport injuryReports = printRequestDriverInsurancePayout(bufferedReader);
-//                                            injuryReports.setCustomerID(userName);
-//                                            if(new CustomerController().requestCarInsurancePayout(injuryReports)) {
-//                                                System.out.println("상해 보험금 신청이 완료되었습니다.");
-//                                            } else {
-//                                                System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
-//                                            }
+                                            injuryReports.setCustomerID(userName);
+                                            if(new CustomerController().requestInjuryInsurancePayout(injuryReports)) {
+                                                System.out.println("상해 보험금 신청이 완료되었습니다.");
+                                            } else {
+                                                System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
+                                            }
                                         } else {
                                             System.out.println("사고 접수를 한 내역이 존재하지 않습니다.");
                                         }
@@ -389,8 +389,19 @@ public class CustomerLoginView {
         }
     }
 
-    private InjuryReport printRequestDriverInsurancePayout(BufferedReader bufferedReader) {
-        return null;
+    private InjuryReport printRequestDriverInsurancePayout(BufferedReader bufferedReader) throws IOException {
+        InjuryReport injuryReport = new InjuryReport();
+        System.out.println("***************** 청구서류 작성 *****************");
+        System.out.println("염좌 여부 (0. 없음 1. 있음) : ");
+        injuryReport.setSprain(Integer.parseInt(bufferedReader.readLine().trim()));
+        System.out.println("단순 골절 (0. 없음 1. 있음) : ");
+        injuryReport.setSimpleFracture(Integer.parseInt(bufferedReader.readLine().trim()));
+        System.out.println("개방성 골절 (0. 없음 1. 있음) : ");
+        injuryReport.setOpenFracture(Integer.parseInt(bufferedReader.readLine().trim()));
+        System.out.println("절단 여부 (0. 없음 1. 있음) :");
+        injuryReport.setCut(Integer.parseInt(bufferedReader.readLine().trim()));
+        System.out.println("청구 서류 작성이 완료 되었습니다.");
+        return injuryReport;
     }
 
     private AccidentReport printRequestCarInsurancePayout(BufferedReader bufferedReader) throws IOException {
