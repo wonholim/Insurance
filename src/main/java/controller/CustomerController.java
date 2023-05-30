@@ -2,10 +2,7 @@ package controller;
 
 import domain.customer.Customer;
 import dao.CustomerDAO;
-import domain.insurance.Accident;
-import domain.insurance.Driver;
-import domain.insurance.Car;
-import domain.insurance.Injury;
+import domain.insurance.*;
 
 public class CustomerController {
     private Car car;
@@ -99,5 +96,17 @@ public class CustomerController {
 
     public boolean injuryAdd(Injury injury) {
         return new CustomerDAO().injuryAdd(injury);
+    }
+
+    public boolean isAccidentAddProcess(String userName) {
+        return new CustomerDAO().isAccidentAddProcess(userName);
+    }
+
+    public boolean requestCarInsurancePayout(AccidentReport accidentReport) {
+        return new CustomerDAO().requestCarInsurancePayout(accidentReport);
+    }
+
+    public boolean isInjuryAddProcess(String userName) {
+        return new CustomerDAO().isInjuryAddProcess(userName);
     }
 }

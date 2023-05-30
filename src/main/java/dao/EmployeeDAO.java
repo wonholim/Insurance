@@ -1,10 +1,7 @@
 package dao;
 
 import connector.Database;
-import domain.insurance.Accident;
-import domain.insurance.Car;
-import domain.insurance.Driver;
-import domain.insurance.Injury;
+import domain.insurance.*;
 import domain.team.Team;
 
 import java.sql.ResultSet;
@@ -215,8 +212,7 @@ public class EmployeeDAO extends Database {
 
     public boolean tmpInjuryInsuranceDelete(Injury injury) {
         String query = "DELETE FROM TmpDriverInsurance WHERE CustomerID = '" + injury.getCustomerID() + "';";
-        if(super.delete(query)) return true;
-        return false;
+        return super.delete(query);
     }
 
     public boolean InjuryInsuranceUpdate(Injury injury) {
@@ -236,5 +232,57 @@ public class EmployeeDAO extends Database {
                 + injury.getDisease() + ", '" + currentDate.toString() +"', '" + teamID.get(0)  + "', '" + teamID.get(1) + "')";
         if(super.create(query)) return true;
         return false;
+    }
+
+    public boolean checkLossEvaluationTeam(String employeeName) {
+        String query = "SELECT EmployeeID FROM Employee WHERE EmployeeID = ? AND TeamNum = ?";
+        if(super.checkTeam(query, new String[]{employeeName, "4"})) return true;
+        return false;
+    }
+
+    public List<AccidentReport> getAccidentList(int i) {
+        String query = "";
+        if(i == 0) query = "SELECT * FROM RequestCarInsurance WHERE EmployeeOne IS NULL;";
+        else if(i == 1) query = "SELECT * FROM RequestCarInsurance WHERE EmployeeOne IS NOT NULL AND EmployeeTwo IS NULL;";
+        else  query = "SELECT * FROM RequestCarInsurance WHERE EmployeeOne IS NOT NULL AND EmployeeTwo IS NOT NULL AND EmployeeThree IS NULL;";
+        try (ResultSet rs = super.retrieve(query)) {
+            List<AccidentReport> accidentReportList = new ArrayList<>();
+            while(rs.next()) {
+                AccidentReport accidentReports= new AccidentReport();
+                accidentReports.setCustomerID(rs.getString("CustomerID"));
+                accidentReports.setTire(rs.getInt("Tire"));
+                accidentReports.setFrontBumper(rs.getInt("FrontBumper"));
+                accidentReports.setBackBumper(rs.getInt("BackBumper"));
+                accidentReports.setFrontLight(rs.getInt("FrontLight"));
+                accidentReports.setBackLight(rs.getInt("BackLight"));
+                accidentReports.setDoor(rs.getInt("Door"));
+                accidentReports.setDamageCondition(rs.getInt("DamageCondition"));
+                accidentReports.setOtherCar(rs.getInt("OtherCar"));
+                accidentReports.setCompensation(rs.getInt("Compensation"));
+                accidentReports.setEmployeeOne(rs.getString("EmployeeOne"));
+                accidentReports.setEmployeeTwo(rs.getString("EmployeeTwo"));
+                accidentReports.setEmployeeThree(rs.getString("EmployeeThree"));
+                accidentReportList.add(accidentReports);
+            }
+            return accidentReportList;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean accidentReportUpdate(AccidentReport accidentReport, String employeeName) {
+        String query = "UPDATE RequestCarInsurance SET Compensation = '" + accidentReport.getCompensation() + "', EmployeeOne = '" + employeeName + "' WHERE CustomerID = '" + accidentReport.getCustomerID() + "';";
+        return super.update(query);
+    }
+
+    public boolean checkClaimProcessingTeam(String employeeName) {
+        String query = "SELECT EmployeeID FROM Employee WHERE EmployeeID = ? AND TeamNum = ?";
+        return super.checkTeam(query, new String[]{employeeName, "2"});
+    }
+
+    public boolean accidentReportDelete(AccidentReport accidentReport) {
+        String query = "DELETE FROM RequestCarInsurance WHERE CustomerID = '" + accidentReport.getCustomerID() + "';";
+        return super.delete(query);
     }
 }

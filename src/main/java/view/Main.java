@@ -166,7 +166,7 @@ public class Main {
             System.out.print("직급 (1. 사원, 2. 대리, 3. 과장, 4. 부장, 5. 사장) : ");
             int rank = Integer.parseInt(br.readLine().trim());
             team.setEmployeeRank(rank);
-            System.out.print("부서 (1. 사고 처리팀, 2. 보상 처리팀, 3. 언더라이팅팀, 4. 손해 사정팀, 5. 상품 개발팀) :");
+            System.out.print("부서 (1. 사고 처리팀, 2. 1, 3. 언더라이팅팀, 4. 손해 사정팀, 5. 상품 개발팀) :");
             int teamNum = Integer.parseInt(br.readLine().trim());
             team.setTeamNumber(teamNum);
         } catch (IOException e) {

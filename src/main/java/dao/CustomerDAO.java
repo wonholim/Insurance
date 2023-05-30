@@ -3,6 +3,7 @@ package dao;
 import connector.Database;
 import domain.customer.Customer;
 import domain.insurance.Accident;
+import domain.insurance.AccidentReport;
 import domain.insurance.Injury;
 
 import java.sql.PreparedStatement;
@@ -292,6 +293,39 @@ public class CustomerDAO extends Database {
                 + injury.getCustomerID() + "', '" + injury.getCustomerName() + "', '" + injury.getRegistrationNumber() + "', '"
                 + injury.getPhoneNum() + "', '" + injury.getLocation() + "', '" + injury.getInjuryDate() + "', '" + injury.getDisease() + "')";
         if(super.create(query)) return true;
+        return false;
+    }
+
+    public boolean isAccidentAddProcess(String userName) {
+        String query = "SELECT CustomerID FROM CarInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        try (ResultSet rs = super.retrieve(query)) {
+            if(rs.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean requestCarInsurancePayout(AccidentReport accidentReport) {
+        String query = "INSERT INTO RequestCarInsurance (CustomerID, Tire, FrontBumper, BackBumper, FrontLight, BackLight, Door, DamageCondition, OtherCar, Compensation, EmployeeOne, EmployeeTwo, EmployeeThree) VALUES ('"
+                + accidentReport.getCustomerID() + "', " + accidentReport.getTire() + ", " + accidentReport.getFrontBumper() + ", "
+                + accidentReport.getBackBumper() + ", " + accidentReport.getFrontLight() + ", " + accidentReport.getBackLight() + ", " + accidentReport.getDoor() + ", "
+                + accidentReport.getDamageCondition() + ", " + accidentReport.getOtherCar() + ", 0, null, null, null)";
+        if(super.create(query)) return true;
+        return false;
+    }
+
+    public boolean isInjuryAddProcess(String userName) {
+        String query = "SELECT CustomerID FROM DriverInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        try (ResultSet rs = super.retrieve(query)) {
+            if(rs.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 }

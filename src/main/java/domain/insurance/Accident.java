@@ -1,6 +1,14 @@
 package domain.insurance;
 
-public class Accident {
+public class Accident extends Insurance{
+    private String customerName;
+    private String registrationNumber;
+    private String location;
+    private String accidentDate;
+    private String carNum;
+    private int service;
+    private String phoneNum;
+    private String customerID;
     public Accident(){
 
     }
@@ -13,8 +21,6 @@ public class Accident {
         this.phoneNum = phoneNum;
     }
 
-    private String phoneNum;
-    private String customerID;
 
     public String getCustomerID() {
         return customerID;
@@ -71,11 +77,4 @@ public class Accident {
     public void setService(int service) {
         this.service = service;
     }
-
-    private String customerName;
-    private String registrationNumber;
-    private String location;
-    private String accidentDate;
-    private String carNum;
-    private int service;
 }

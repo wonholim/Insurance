@@ -2,7 +2,9 @@ package view;
 
 import controller.CustomerController;
 import domain.insurance.Accident;
+import domain.insurance.AccidentReport;
 import domain.insurance.Injury;
+import domain.insurance.InjuryReport;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -326,6 +328,55 @@ public class CustomerLoginView {
                         }
                         break;
                     case "6":
+                        printInsurance = printRegisterInsurance();
+                        if(printInsurance == null) {
+                            System.out.println("가입된 보험 내역이 존재하지 않습니다.");
+                            break;
+                        }
+                        SixOut:
+                        while(true) {
+                            printRequestInsurancePayoutMenu();
+                            select = bufferedReader.readLine().trim();
+                            switch (select) {
+                                case "1":
+                                    if(!new CustomerController().isAccidentAdd(userName)) {
+                                        if(new CustomerController().isAccidentAddProcess(userName)){
+                                            AccidentReport accidentReport = printRequestCarInsurancePayout(bufferedReader);
+                                            accidentReport.setCustomerID(userName);
+                                            if(new CustomerController().requestCarInsurancePayout(accidentReport)) {
+                                                System.out.println("자동차 보험금 신청이 완료되었습니다.");
+                                            } else {
+                                                System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
+                                            }
+                                        } else {
+                                            System.out.println("사고 접수를 한 내역이 존재하지 않습니다.");
+                                        }
+                                    } else {
+                                        System.out.println("현재 사고 처리 승인을 기다리는 중입니다. 승인까지 최대 3일 소요됩니다.");
+                                    }
+                                    break;
+                                case "2":
+                                    if(!new CustomerController().isInjuryAdd(userName)) {
+                                        if(new CustomerController().isInjuryAddProcess(userName)){
+                                            InjuryReport injuryReports = printRequestDriverInsurancePayout(bufferedReader);
+//                                            injuryReports.setCustomerID(userName);
+//                                            if(new CustomerController().requestCarInsurancePayout(injuryReports)) {
+//                                                System.out.println("상해 보험금 신청이 완료되었습니다.");
+//                                            } else {
+//                                                System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
+//                                            }
+                                        } else {
+                                            System.out.println("사고 접수를 한 내역이 존재하지 않습니다.");
+                                        }
+                                    } else {
+                                        System.out.println("현재 사고 처리 승인을 기다리는 중입니다. 승인까지 최대 3일 소요됩니다.");
+                                    }
+                                    break;
+                                case "r":
+                                    break SixOut;
+                                default: System.out.println("입력값이 올바르지 않습니다.");
+                            }
+                        }
                         break;
                     case "l":
                         break OUT;
@@ -336,6 +387,40 @@ public class CustomerLoginView {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private InjuryReport printRequestDriverInsurancePayout(BufferedReader bufferedReader) {
+        return null;
+    }
+
+    private AccidentReport printRequestCarInsurancePayout(BufferedReader bufferedReader) throws IOException {
+        AccidentReport accidentReport = new AccidentReport();
+        System.out.println("***************** 청구서류 작성 *****************");
+        System.out.println("타이어 파손 개수 여부(1, 2, 3, 4) : ");
+        accidentReport.setTire(Integer.parseInt(bufferedReader.readLine().trim()));
+        System.out.println("앞 범퍼 파손 여부 (0. 파손X, 1. 파손O) : ");
+        accidentReport.setFrontBumper(Integer.parseInt(bufferedReader.readLine().trim()));
+        System.out.println("뒷 범퍼 파손 여부 (0. 파손X, 1. 파손O) : ");
+        accidentReport.setBackBumper(Integer.parseInt(bufferedReader.readLine().trim()));
+        System.out.println("앞 라이트 파손 개수 여부 (1, 2) :");
+        accidentReport.setFrontLight(Integer.parseInt(bufferedReader.readLine().trim()));
+        System.out.println("뒷 라이트 파손 개수 여부 (1, 2) :");
+        accidentReport.setBackLight(Integer.parseInt(bufferedReader.readLine().trim()));
+        System.out.println("문 파손 개수 여부 (1, 2, 3, 4) :");
+        accidentReport.setDoor(Integer.parseInt(bufferedReader.readLine().trim()));
+        System.out.println("0. 경미한 파손 1. 반정도 파손 2. 완전 파손 : ");
+        accidentReport.setDamageCondition(Integer.parseInt(bufferedReader.readLine().trim()));
+        System.out.println("상대 차량 여부 (0. 없음 1. 있음) :");
+        accidentReport.setOtherCar(Integer.parseInt(bufferedReader.readLine().trim()));
+        System.out.println("청구 서류 작성이 완료 되었습니다.");
+        return accidentReport;
+    }
+
+    private void printRequestInsurancePayoutMenu() {
+        System.out.println("***************** RequestInsurancePayout MENU *****************");
+        System.out.println("1. 자동차 사고 보험금 접수");
+        System.out.println("2. 상해 사고 보험금 접수");
+        System.out.println("r. 뒤로가기");
     }
 
     private Injury printInjuryReportMenu(BufferedReader bufferedReader) throws IOException {
@@ -458,5 +543,4 @@ public class CustomerLoginView {
         System.out.println("6. 보험금 신청");
         System.out.println("l. 로그아웃");
     }
-
 }

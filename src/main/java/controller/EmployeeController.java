@@ -1,11 +1,7 @@
 package controller;
 
 import dao.EmployeeDAO;
-import domain.customer.Customer;
-import domain.insurance.Accident;
-import domain.insurance.Car;
-import domain.insurance.Driver;
-import domain.insurance.Injury;
+import domain.insurance.*;
 import domain.team.Team;
 
 import java.util.List;
@@ -72,5 +68,25 @@ public class EmployeeController {
 
     public boolean InjuryInsuranceUpdate(Injury injury) {
         return new EmployeeDAO().InjuryInsuranceUpdate(injury);
+    }
+
+    public boolean checkLossEvaluationTeam(String employeeName) {
+        return new EmployeeDAO().checkLossEvaluationTeam(employeeName);
+    }
+
+    public boolean accidentReportUpdate(AccidentReport accidentReport, String employeeName) {
+        return new EmployeeDAO().accidentReportUpdate(accidentReport, employeeName);
+    }
+
+    public List<AccidentReport> getAccidentList(int i) {
+        return new EmployeeDAO().getAccidentList(i);
+    }
+
+    public boolean checkClaimProcessingTeam(String employeeName) {
+        return new EmployeeDAO().checkClaimProcessingTeam(employeeName);
+    }
+
+    public boolean accidentReportDelete(AccidentReport accidentReport) {
+        return new EmployeeDAO().accidentReportDelete(accidentReport);
     }
 }
