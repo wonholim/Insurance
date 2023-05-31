@@ -2,7 +2,6 @@ package view;
 
 import controller.EmployeeController;
 import insurance.*;
-import insurance.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -87,7 +86,7 @@ public class EmployeeLoginView {
                                 case "1":
                                     List<Accident> accidents = new EmployeeController().getTmpAccidentList();
                                     if (accidents.size() == 0) {
-                                        System.out.println("검증할 대상이 없습니다.");
+                                        System.out.println("처리할 대상이 없습니다.");
                                         break;
                                     }
                                     int accidentIndex = -1;
@@ -108,7 +107,7 @@ public class EmployeeLoginView {
                                 case "2":
                                     List<Injury> injuries = new EmployeeController().getTmpInjuryList();
                                     if (injuries.size() == 0) {
-                                        System.out.println("검증할 대상이 없습니다.");
+                                        System.out.println("처리할 대상이 없습니다.");
                                         break;
                                     }
                                     int injuryIndex = -1;
@@ -142,7 +141,7 @@ public class EmployeeLoginView {
                             select = bufferedReader.readLine().trim();
                             switch(select) {
                                 case "1":
-                                    List<AccidentReport> accidentReports = new EmployeeController().getAccidentList(1);
+                                    List<AccidentReport> accidentReports = new EmployeeController().getAccidentList(0);
                                     if (accidentReports.size() == 0) {
                                         System.out.println("손해 조사할 대상이 없습니다.");
                                         break;
@@ -152,13 +151,14 @@ public class EmployeeLoginView {
                                         accidentReportIndex = printAccidentReportCustomer(accidentReports, bufferedReader);
                                         if (accidentReportIndex != -1) break;
                                     }
-                                    if (!new EmployeeController().accidentReportUpdate(accidentReports.get(accidentReportIndex), employeeName)) {
+                                    if (!new EmployeeController().accidentReportUpdate(accidentReports.get(accidentReportIndex), employeeName, 0)) {
                                         System.out.println("DB 업데이트에 오류가 발생했습니다.");
                                         break;
                                     }
                                     System.out.println("손해 조사 처리를 완료 했습니다.");
+                                    break;
                                 case "2":
-                                    List<InjuryReport> injuryReports = new EmployeeController().getInjuryList(1);
+                                    List<InjuryReport> injuryReports = new EmployeeController().getInjuryList(0);
                                     if (injuryReports.size() == 0) {
                                         System.out.println("손해 조사할 대상이 없습니다.");
                                         break;
@@ -168,7 +168,7 @@ public class EmployeeLoginView {
                                         injuryReportIndex = printInjuryReportCustomer(injuryReports, bufferedReader);
                                         if (injuryReportIndex != -1) break;
                                     }
-                                    if (!new EmployeeController().injuryReportUpdate(injuryReports.get(injuryReportIndex), employeeName)) {
+                                    if (!new EmployeeController().injuryReportUpdate(injuryReports.get(injuryReportIndex), employeeName, 0)) {
                                         System.out.println("DB 업데이트에 오류가 발생했습니다.");
                                         break;
                                     }
@@ -185,12 +185,13 @@ public class EmployeeLoginView {
                         }
                         FourOut:
                         while(true) {
+                            printLossInvestigationMenu();
                             select = bufferedReader.readLine().trim();
                             switch (select) {
                                 case "1":
-                                    List<AccidentReport> accidentList = new EmployeeController().getAccidentList(2);
+                                    List<AccidentReport> accidentList = new EmployeeController().getAccidentList(1);
                                     if (accidentList.size() == 0) {
-                                        System.out.println("손해 조사할 대상이 없습니다.");
+                                        System.out.println("손해 사정할 대상이 없습니다.");
                                         break;
                                     }
                                     int accidentListIndex = -1;
@@ -198,15 +199,16 @@ public class EmployeeLoginView {
                                         accidentListIndex = printAccidentReportLossEvaluationCustomer(accidentList, bufferedReader);
                                         if (accidentListIndex != -1) break;
                                     }
-                                    if (!new EmployeeController().accidentReportUpdate(accidentList.get(accidentListIndex), employeeName)) {
+                                    if (!new EmployeeController().accidentReportUpdate(accidentList.get(accidentListIndex), employeeName, 1)) {
                                         System.out.println("DB 업데이트에 오류가 발생했습니다.");
                                         break;
                                     }
                                     System.out.println(" 손해 사정 처리를 완료 했습니다.");
+                                    break;
                                 case "2":
-                                    List<InjuryReport> injuryReports = new EmployeeController().getInjuryList(2);
+                                    List<InjuryReport> injuryReports = new EmployeeController().getInjuryList(1);
                                     if (injuryReports.size() == 0) {
-                                        System.out.println("손해 조사할 대상이 없습니다.");
+                                        System.out.println("손해 사정할 대상이 없습니다.");
                                         break;
                                     }
                                     int injuryReportIndex = -1;
@@ -214,11 +216,12 @@ public class EmployeeLoginView {
                                         injuryReportIndex = printInjuryReportLossEvaluationCustomer(injuryReports, bufferedReader);
                                         if (injuryReportIndex != -1) break;
                                     }
-                                    if (!new EmployeeController().injuryReportUpdate(injuryReports.get(injuryReportIndex), employeeName)) {
+                                    if (!new EmployeeController().injuryReportUpdate(injuryReports.get(injuryReportIndex), employeeName, 1)) {
                                         System.out.println("DB 업데이트에 오류가 발생했습니다.");
                                         break;
                                     }
                                     System.out.println("손해 사정 처리를 완료 했습니다.");
+                                    break;
                                 case "r": break FourOut;
                                 default: System.out.println("입력값이 올바르지 않습니다.");
                             }
@@ -231,10 +234,11 @@ public class EmployeeLoginView {
                         }
                         FiveOut:
                         while(true) {
+                            printCompensationMenu();
                             select = bufferedReader.readLine().trim();
                             switch (select) {
                                 case "1":
-                                    List<AccidentReport> list = new EmployeeController().getAccidentList(3);
+                                    List<AccidentReport> list = new EmployeeController().getAccidentList(2);
                                     if (list.size() == 0) {
                                         System.out.println("보험금을 지급할 대상이 없습니다.");
                                         break;
@@ -249,8 +253,9 @@ public class EmployeeLoginView {
                                         break;
                                     }
                                     System.out.println(list.get(accidentIndex).getCompensation() + "원 보험금 지급을 완료 했습니다.");
+                                    break;
                                 case "2":
-                                    List<InjuryReport> injuryReports = new EmployeeController().getInjuryList(3);
+                                    List<InjuryReport> injuryReports = new EmployeeController().getInjuryList(2);
                                     if (injuryReports.size() == 0) {
                                         System.out.println("보험금을 지급할 대상이 없습니다.");
                                         break;
@@ -265,6 +270,7 @@ public class EmployeeLoginView {
                                         break;
                                     }
                                     System.out.println(injuryReports.get(injuryIndex).getCompensation() + "원 보험금 지급을 완료 했습니다.");
+                                    break;
                                 case "r": break FiveOut;
                                 default: System.out.println("입력값이 올바르지 않습니다.");
                             }
@@ -281,6 +287,20 @@ public class EmployeeLoginView {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void printLossInvestigationMenu() {
+        System.out.println("***************** Compensation Menu *****************");
+        System.out.println("1. 자동차 보험금 손해 사정");
+        System.out.println("2. 운전자 보험금 손해 사정");
+        System.out.println("r. 뒤로가기");
+    }
+
+    private void printCompensationMenu() {
+        System.out.println("***************** Compensation Menu *****************");
+        System.out.println("1. 자동차 보험금 지급");
+        System.out.println("2. 운전자 보험금 지급");
+        System.out.println("r. 뒤로가기");
     }
 
     private int printInjuryCompensationCustomer(List<InjuryReport> injuryReports, BufferedReader bufferedReader) throws IOException {
@@ -465,7 +485,7 @@ public class EmployeeLoginView {
                     + " | 운전면허 : " + c.getDriverLicense() + " | 월 납부료 : " + c.getPrice());
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
-        int select = Integer.parseInt(bufferedReader.readLine());
+        int select = Integer.parseInt(bufferedReader.readLine().trim());
         if(select < 0 || select > count - 1) return -1;
         return select;
     }

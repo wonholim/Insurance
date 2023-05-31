@@ -75,8 +75,8 @@ public class EmployeeController {
         return new EmployeeDAO().checkLossEvaluationTeam(employeeName);
     }
 
-    public boolean accidentReportUpdate(AccidentReport accidentReport, String employeeName) {
-        return new EmployeeDAO().accidentReportUpdate(accidentReport, employeeName);
+    public boolean accidentReportUpdate(AccidentReport accidentReport, String employeeName, int i) {
+        return new EmployeeDAO().accidentReportUpdate(accidentReport, employeeName, i);
     }
 
     public List<AccidentReport> getAccidentList(int i) {
@@ -95,8 +95,8 @@ public class EmployeeController {
         return new EmployeeDAO().getInjuryList(i);
     }
 
-    public boolean injuryReportUpdate(InjuryReport injuryReport, String employeeName) {
-        return new EmployeeDAO().injuryReportUpdate(injuryReport, employeeName);
+    public boolean injuryReportUpdate(InjuryReport injuryReport, String employeeName, int i) {
+        return new EmployeeDAO().injuryReportUpdate(injuryReport, employeeName, i);
     }
 
     public boolean injuryReportDelete(InjuryReport injuryReport) {

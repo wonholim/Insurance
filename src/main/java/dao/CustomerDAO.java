@@ -309,10 +309,10 @@ public class CustomerDAO extends Database {
     }
 
     public boolean requestCarInsurancePayout(AccidentReport accidentReport) {
-        String query = "INSERT INTO RequestCarInsurance (CustomerID, Tire, FrontBumper, BackBumper, FrontLight, BackLight, Door, DamageCondition, OtherCar, Compensation, EmployeeOne, EmployeeTwo, EmployeeThree) VALUES ('"
+        String query = "INSERT INTO RequestCarInsurance (CustomerID, Tire, FrontBumper, BackBumper, FrontLight, BackLight, Door, DamageCondition, OtherCar, Compensation) VALUES ('"
                 + accidentReport.getCustomerID() + "', " + accidentReport.getTire() + ", " + accidentReport.getFrontBumper() + ", "
                 + accidentReport.getBackBumper() + ", " + accidentReport.getFrontLight() + ", " + accidentReport.getBackLight() + ", " + accidentReport.getDoor() + ", "
-                + accidentReport.getDamageCondition() + ", " + accidentReport.getOtherCar() + ", 0, null, null, null)";
+                + accidentReport.getDamageCondition() + ", " + accidentReport.getOtherCar() + ", 0)";
         if(super.create(query)) return true;
         return false;
     }
@@ -330,10 +330,9 @@ public class CustomerDAO extends Database {
     }
 
     public boolean requestInjuryInsurancePayout(InjuryReport injuryReports) {
-        String query = "INSERT INTO RequestInjuryInsurance (CustomerID, Sprain, SimpleFracture, OpenFracture, Cut, Compensation, EmployeeOne, EmployeeTwo, EmployeeThree) VALUES ('"
-                + injuryReports.getCustomerID() + "', " + injuryReports.getSprain() + "', " + injuryReports.getSimpleFracture() + ", "
-                + injuryReports.getOpenFracture() + ", " + injuryReports.getCut() + ", " + injuryReports.getCompensation() + ", '" + injuryReports.getEmployeeOne() + "', '"
-                + injuryReports.getEmployeeTwo() + "', '" + injuryReports.getEmployeeThree() + "')";
+        String query = "INSERT INTO RequestInjuryInsurance (CustomerID, Sprain, SimpleFracture, OpenFracture, Cut, Compensation) VALUES ('"
+                + injuryReports.getCustomerID() + "', " + injuryReports.getSprain() + ", " + injuryReports.getSimpleFracture() + ", "
+                + injuryReports.getOpenFracture() + ", " + injuryReports.getCut() + ", " + injuryReports.getCompensation() + ");";
         return super.create(query);
     }
 }

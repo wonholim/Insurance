@@ -100,22 +100,23 @@ public class CustomerLoginView {
                                             System.out.println(penaltyFee + "원");
                                             if(penaltyFee == 0) {
                                                 System.out.println("해당 보험은 청약철회가 가능합니다.");
+                                                // cjdd
                                                 System.out.println("1. 청약 철회 한다.");
                                                 System.out.println("2. 청약 철회 하지않는다.");
                                             }else {
-                                                System.out.println("1. 혜지한다.");
-                                                System.out.println("2. 혜지하지않는다.");
+                                                System.out.println("1. 해지한다.");
+                                                System.out.println("2. 해지하지않는다.");
                                             }
                                             select = bufferedReader.readLine().trim();
                                             if(select.equals("1")){
                                                 if(new CustomerController().cancellationCarInsurance(userName)) {
-                                                    System.out.println("보험이 혜지 되었습니다.");
+                                                    System.out.println("보험이 해지 되었습니다.");
                                                 }else{
                                                     System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
                                                 }
                                                 break;
                                             }else if(select.equals("2")){
-                                                System.out.println("보험 혜지를 취소하였습니다.");
+                                                System.out.println("보험 해지를 취소하였습니다.");
                                                 break;
                                             }else {
                                                 System.out.println("입력값이 올바르지 않습니다.");
@@ -133,22 +134,23 @@ public class CustomerLoginView {
                                             System.out.println(penaltyFee + "원");
                                             if(penaltyFee == 0) {
                                                 System.out.println("해당 보험은 청약철회가 가능합니다.");
+                                                // 청약 철회 다시 작성
                                                 System.out.println("1. 청약 철회 한다.");
                                                 System.out.println("2. 청약 철회 하지않는다.");
                                             }else {
-                                                System.out.println("1. 혜지한다.");
-                                                System.out.println("2. 혜지하지않는다.");
+                                                System.out.println("1. 해지한다.");
+                                                System.out.println("2. 해지하지않는다.");
                                             }
                                             select = bufferedReader.readLine().trim();
                                             if(select.equals("1")){
                                                 if(new CustomerController().cancellationDriverInsurance(userName)) {
-                                                    System.out.println("보험이 혜지 되었습니다.");
+                                                    System.out.println("보험이 해지 되었습니다.");
                                                 }else{
                                                     System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
                                                 }
                                                 break;
                                             }else if(select.equals("2")){
-                                                System.out.println("보험 혜지를 취소하였습니다.");
+                                                System.out.println("보험 해지를 취소하였습니다.");
                                                 break;
                                             }else {
                                                 System.out.println("입력값이 올바르지 않습니다.");
@@ -378,10 +380,8 @@ public class CustomerLoginView {
                             }
                         }
                         break;
-                    case "l":
-                        break OUT;
-                    default:
-                        System.out.println("입력값이 올바르지 않습니다.");
+                    case "l": break OUT;
+                    default: System.out.println("입력값이 올바르지 않습니다.");
                 }
             }
         } catch (IOException e) {
@@ -516,8 +516,8 @@ public class CustomerLoginView {
     }
     private void printInsuranceList() {
         System.out.println("***************** Insurance MENU *****************");
-        System.out.println("1. 자동차 보험 혜지");
-        System.out.println("2. 운전자 보험 혜지");
+        System.out.println("1. 자동차 보험 해지");
+        System.out.println("2. 운전자 보험 해지");
         System.out.println("r. 뒤로가기");
     }
 
@@ -548,7 +548,7 @@ public class CustomerLoginView {
         System.out.println("***************** CUSTOMER MENU *****************");
         System.out.println("1. 보험 상품 조회");
         System.out.println("2. 가입한 보험 상품 조회");
-        System.out.println("3. 보험 혜지");
+        System.out.println("3. 보험 해지");
         System.out.println("4. 보험 갱신");
         System.out.println("5. 사고 접수");
         System.out.println("6. 보험금 신청");

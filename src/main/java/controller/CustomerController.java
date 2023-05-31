@@ -7,14 +7,6 @@ import insurance.*;
 public class CustomerController {
     private Car car;
     private Driver driver;
-    public boolean register(Customer customer) {
-        return new CustomerDAO().register(customer);
-    }
-
-    public boolean login(String[] user) {
-        return new CustomerDAO().login(user);
-    }
-
     public String getInsuranceProduct(String userName, String productID) {
         Customer customer = new CustomerDAO().getUserData(userName);
         if(customer == null) return null;

@@ -3,7 +3,6 @@ package dao;
 import connector.Database;
 import insurance.*;
 import team.Team;
-import insurance.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -230,7 +229,7 @@ public class EmployeeDAO extends Database {
         query = "INSERT INTO DriverInsurance (CustomerID, CustomerName, RegistrationNumber, PhoneNum, Location, InjuryDate, Disease, ProcessinDate , EmployeeOne, EmployeeTwo) VALUES ('"
                 + injury.getCustomerID() + "', '" + injury.getCustomerName() + "', '" + injury.getRegistrationNumber() + "', '"
                 + injury.getPhoneNum() + "', '" + injury.getLocation() + "', '" + injury.getInjuryDate() + "', '"
-                + injury.getDisease() + ", '" + currentDate.toString() +"', '" + teamID.get(0)  + "', '" + teamID.get(1) + "')";
+                + injury.getDisease() + "', '" + currentDate.toString() +"', '" + teamID.get(0)  + "', '" + teamID.get(1) + "')";
         if(super.create(query)) return true;
         return false;
     }
@@ -272,8 +271,10 @@ public class EmployeeDAO extends Database {
         return null;
     }
 
-    public boolean accidentReportUpdate(AccidentReport accidentReport, String employeeName) {
-        String query = "UPDATE RequestCarInsurance SET Compensation = '" + accidentReport.getCompensation() + "', EmployeeOne = '" + employeeName + "' WHERE CustomerID = '" + accidentReport.getCustomerID() + "';";
+    public boolean accidentReportUpdate(AccidentReport accidentReport, String employeeName, int i) {
+        String query = "";
+        if(i == 0) query = "UPDATE RequestCarInsurance SET Compensation = '" + accidentReport.getCompensation() + "', EmployeeOne = '" + employeeName + "' WHERE CustomerID = '" + accidentReport.getCustomerID() + "';";
+        else if(i == 1) query = "UPDATE RequestCarInsurance SET Compensation = '" + accidentReport.getCompensation() + "', EmployeeTwo = '" + employeeName + "' WHERE CustomerID = '" + accidentReport.getCustomerID() + "';";
         return super.update(query);
     }
 
@@ -314,8 +315,10 @@ public class EmployeeDAO extends Database {
         return null;
     }
 
-    public boolean injuryReportUpdate(InjuryReport injuryReport, String employeeName) {
-        String query = "UPDATE RequestCarInsurance SET Compensation = '" + injuryReport.getCompensation() + "', EmployeeOne = '" + employeeName + "' WHERE CustomerID = '" + injuryReport.getCustomerID() + "';";
+    public boolean injuryReportUpdate(InjuryReport injuryReport, String employeeName, int i) {
+        String query = "";
+        if (i == 0) query = "UPDATE RequestInjuryInsurance SET Compensation = '" + injuryReport.getCompensation() + "', EmployeeOne = '" + employeeName + "' WHERE CustomerID = '" + injuryReport.getCustomerID() + "';";
+        else if(i == 1) query = "UPDATE RequestInjuryInsurance SET Compensation = '" + injuryReport.getCompensation() + "', EmployeeTwo = '" + employeeName + "' WHERE CustomerID = '" + injuryReport.getCustomerID() + "';";
         return super.update(query);
     }
 

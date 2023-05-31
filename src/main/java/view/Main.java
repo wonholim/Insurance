@@ -2,8 +2,8 @@ package view;
 
 import controller.EmployeeController;
 import controller.FSSController;
-import controller.CustomerController;
 import customer.Customer;
+import dao.CustomerDAO;
 import fss.FSS;
 import team.Team;
 
@@ -166,7 +166,7 @@ public class Main {
             System.out.print("직급 (1. 사원, 2. 대리, 3. 과장, 4. 부장, 5. 사장) : ");
             int rank = Integer.parseInt(br.readLine().trim());
             team.setEmployeeRank(rank);
-            System.out.print("부서 (1. 사고 처리팀, 2. 1, 3. 언더라이팅팀, 4. 손해 사정팀, 5. 상품 개발팀) :");
+            System.out.print("부서 (1. 사고 처리팀, 2. 보상 처리팀, 3. 언더라이팅팀, 4. 손해 사정팀, 5. 상품 개발팀) :");
             int teamNum = Integer.parseInt(br.readLine().trim());
             team.setTeamNumber(teamNum);
         } catch (IOException e) {
@@ -218,8 +218,7 @@ public class Main {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        CustomerController customerController = new CustomerController();
-        if (customerController.register(customer)) {
+        if (new CustomerDAO().register(customer)) {
             System.out.println("회원가입이 완료되었습니다.");
         } else {
             System.out.println("이미 등록된 회원입니다.");
@@ -236,8 +235,7 @@ public class Main {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        CustomerController customerController = new CustomerController();
-        if (customerController.login(user)) {
+        if (new CustomerDAO().login(user)) {
             System.out.println(user[0] + "님 환영합니다.");
             return user[0];
         } else {
