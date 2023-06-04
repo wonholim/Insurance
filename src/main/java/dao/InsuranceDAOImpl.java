@@ -11,8 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
 
 public class InsuranceDAOImpl extends Database implements InsuranceDAO {
 
@@ -20,18 +18,15 @@ public class InsuranceDAOImpl extends Database implements InsuranceDAO {
     @Override
     public String retriveAllInsuranceProduct(String userName) throws DatabaseException {
         String line = "";
-        String query = "SELECT * FROM CarInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        String query = "SELECT ProductID FROM InsuranceProduct WHERE CustomerID = '" + userName + "' AND EmployeeUnderWriting IS NOT NULL;";
         try (ResultSet rs = super.retrieve(query)) {
-            if(rs.next()) {
-                line += " 자동차 보험(Car)";
-            }
-        } catch (SQLException e) {
-            throw new DatabaseException("DB 조회에 오류가 발생했습니다.");
-        }
-        query = "SELECT * FROM DriverInsuranceProduct WHERE CustomerID = '" + userName + "';";
-        try (ResultSet rs = super.retrieve(query)) {
-            if(rs.next()) {
-                line += " 운전자 보험(Driver)";
+            while(rs.next()) {
+                String productID = rs.getString("ProductID");
+                if(productID.equals("1")){
+                    line += " 자동차 보험(Car) ";
+                }else{
+                    line += " 운전자 보험(Driver) ";
+                }
             }
         } catch (SQLException e) {
             throw new DatabaseException("DB 조회에 오류가 발생했습니다.");
@@ -41,7 +36,7 @@ public class InsuranceDAOImpl extends Database implements InsuranceDAO {
 
     @Override
     public long retrievePenaltyFeeInsuranceCar(String userName) throws DatabaseException {
-        String query = "SELECT subcriptionDate, coverageExpirationDate FROM CarInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        String query = "SELECT subcriptionDate, coverageExpirationDate FROM InsuranceProduct WHERE CustomerID = '" + userName + "' AND ProductID = '1';";
         String subcriptionDate = "";
         String coverageExpirationDate = "";
         try (ResultSet rs = super.retrieve(query)) {
@@ -64,7 +59,7 @@ public class InsuranceDAOImpl extends Database implements InsuranceDAO {
 
     @Override
     public long retrievePenaltyFeeInsuranceDriver(String userName) throws DatabaseException {
-        String query = "SELECT subcriptionDate, coverageExpirationDate FROM DriverInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        String query = "SELECT subcriptionDate, coverageExpirationDate FROM InsuranceProduct WHERE CustomerID = '" + userName + "' AND ProductID = '2';";
         String subcriptionDate = "";
         String coverageExpirationDate = "";
         try (ResultSet rs = super.retrieve(query)) {
@@ -87,7 +82,7 @@ public class InsuranceDAOImpl extends Database implements InsuranceDAO {
 
     @Override
     public boolean retrieveDateCarInsurance(String userName) throws DatabaseException {
-        String query = "SELECT coverageExpirationDate FROM CarInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        String query = "SELECT coverageExpirationDate FROM InsuranceProduct WHERE CustomerID = '" + userName + "' AND ProductID = '1';";
         String coverageExpirationDate = "";
         try (ResultSet rs = super.retrieve(query)) {
             if(rs.next()) {
@@ -103,7 +98,7 @@ public class InsuranceDAOImpl extends Database implements InsuranceDAO {
 
     @Override
     public boolean retrieveDateDriverInsurance(String userName) throws DatabaseException {
-        String query = "SELECT coverageExpirationDate FROM DriverInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        String query = "SELECT coverageExpirationDate FROM InsuranceProduct WHERE CustomerID = '" + userName + "' AND ProductID = '2';";
         String coverageExpirationDate = "";
         try (ResultSet rs = super.retrieve(query)) {
             if(rs.next()) {
@@ -119,7 +114,7 @@ public class InsuranceDAOImpl extends Database implements InsuranceDAO {
 
     @Override
     public boolean retrieveAccidentInsurance(String userName) throws DatabaseException {
-        String query = "SELECT CustomerID FROM TmpAccidentInsurance WHERE CustomerID = '" + userName + "';";
+        String query = "SELECT CustomerID FROM AccidentAccept WHERE CustomerID = '" + userName + "' AND EmployeeOne IS NULL;";
         try (ResultSet rs = super.retrieve(query)) {
             if(rs.next()) {
                 return true;
@@ -132,7 +127,7 @@ public class InsuranceDAOImpl extends Database implements InsuranceDAO {
 
     @Override
     public boolean retrieveInjuryInsurance(String userName) throws DatabaseException {
-        String query = "SELECT CustomerID FROM TmpDriverInsurance WHERE CustomerID = '" + userName + "';";
+        String query = "SELECT CustomerID FROM InjuryAccept WHERE CustomerID = '" + userName + "' AND EmployeeOne IS NULL;";
         try (ResultSet rs = super.retrieve(query)) {
             if(rs.next()) {
                 return true;
@@ -145,7 +140,7 @@ public class InsuranceDAOImpl extends Database implements InsuranceDAO {
 
     @Override
     public boolean retrieveAccidentCompensation(AccidentReport accidentReport) throws DatabaseException {
-        String query = "INSERT INTO RequestCarInsurance (CustomerID, Tire, FrontBumper, BackBumper, FrontLight, BackLight, Door, DamageCondition, OtherCar, Compensation) VALUES ('"
+        String query = "INSERT INTO AccidentReport (CustomerID, Tire, FrontBumper, BackBumper, FrontLight, BackLight, Door, DamageCondition, OtherCar, Compensation) VALUES ('"
                 + accidentReport.getCustomerID() + "', " + accidentReport.getTire() + ", " + accidentReport.getFrontBumper() + ", "
                 + accidentReport.getBackBumper() + ", " + accidentReport.getFrontLight() + ", " + accidentReport.getBackLight() + ", " + accidentReport.getDoor() + ", "
                 + accidentReport.getDamageCondition() + ", " + accidentReport.getOtherCar() + ", 0)";
@@ -154,31 +149,29 @@ public class InsuranceDAOImpl extends Database implements InsuranceDAO {
 
     @Override
     public boolean retrieveInjuryCompensation(InjuryReport injuryReports) throws DatabaseException {
-        String query = "INSERT INTO RequestInjuryInsurance (CustomerID, Sprain, SimpleFracture, OpenFracture, Cut, Compensation) VALUES ('"
+        String query = "INSERT INTO InjuryReport (CustomerID, Sprain, SimpleFracture, OpenFracture, Cut, Compensation) VALUES ('"
                 + injuryReports.getCustomerID() + "', " + injuryReports.getSprain() + ", " + injuryReports.getSimpleFracture() + ", "
                 + injuryReports.getOpenFracture() + ", " + injuryReports.getCut() + ", " + injuryReports.getCompensation() + ");";
         return super.create(query);
     }
 
     @Override
-    public boolean insertAccident(Accident accident) throws DatabaseException {
-        String query = "INSERT INTO TmpAccidentInsurance (CustomerID, CustomerName, RegistrationNumber, PhoneNum, Location, AccidentDate, CarNum, Service) VALUES ('"
-                + accident.getCustomerID() + "', '" + accident.getCustomerName() + "', '" + accident.getRegistrationNumber() + "', '"
-                + accident.getPhoneNum() + "', '" + accident.getLocation() + "', '" + accident.getAccidentDate() + "', '" + accident.getCarNum() + "'," + accident.getService() + ")";
+    public boolean insertAccident(Accident accident, String userName) throws DatabaseException {
+        String query = "INSERT INTO AccidentAccept (CustomerID, Location, AccidentDate, Service) VALUES ('"
+                + userName + "', '" + accident.getLocation() + "', '" + accident.getAccidentDate() + "', " + accident.getService() + ")";
         return super.create(query);
     }
 
     @Override
-    public boolean insertInjury(Injury injury) throws DatabaseException {
-        String query = "INSERT INTO TmpDriverInsurance (CustomerID, CustomerName, RegistrationNumber, PhoneNum, Location, InjuryDate, Disease) VALUES ('"
-                + injury.getCustomerID() + "', '" + injury.getCustomerName() + "', '" + injury.getRegistrationNumber() + "', '"
-                + injury.getPhoneNum() + "', '" + injury.getLocation() + "', '" + injury.getInjuryDate() + "', '" + injury.getDisease() + "')";
+    public boolean insertInjury(Injury injury, String userName) throws DatabaseException {
+        String query = "INSERT INTO InjuryAccept (CustomerID, Location, InjuryDate, Disease) VALUES ('"
+                + userName + "', '" + injury.getLocation() + "', '" + injury.getInjuryDate() + "', '" + injury.getDisease() + "')";
         return super.create(query);
     }
 
     @Override
     public boolean retrieveAccident(String userName) throws DatabaseException {
-        String query = "SELECT CustomerID FROM CarInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        String query = "SELECT CustomerID FROM AccidentAccept WHERE CustomerID = '" + userName + "' AND EmployeeOne IS NOT NULL;";
         try (ResultSet rs = super.retrieve(query)) {
             if(rs.next()) {
                 return true;
@@ -191,7 +184,7 @@ public class InsuranceDAOImpl extends Database implements InsuranceDAO {
 
     @Override
     public boolean retrieveInjury(String userName) throws DatabaseException {
-        String query = "SELECT CustomerID FROM DriverInsuranceProduct WHERE CustomerID = '" + userName + "';";
+        String query = "SELECT CustomerID FROM InjuryAccept WHERE CustomerID = '" + userName + "' AND EmployeeOne IS NOT NULL;";
         try (ResultSet rs = super.retrieve(query)) {
             if(rs.next()) {
                 return true;

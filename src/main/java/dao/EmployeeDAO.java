@@ -18,8 +18,8 @@ public interface EmployeeDAO {
     List<Driver> retrieveDriverUnderWritingList() throws DatabaseException;
     boolean deleteCarUnderWriting(Car car) throws DatabaseException;
     boolean deleteDriverUnderWriting(Driver driver) throws DatabaseException;
-    boolean updateCarUnderWriting(Car car) throws DatabaseException;
-    boolean updateDriverUnderWriting(Driver driver) throws DatabaseException;
+    boolean updateCarUnderWriting(Car car, String employeeName) throws DatabaseException;
+    boolean updateDriverUnderWriting(Driver driver, String employeeName) throws DatabaseException;
 
     boolean retrieveAccidentTeam(String employeeName);
     boolean retrieveLossEvaluationTeam(String employeeName);

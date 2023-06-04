@@ -25,4 +25,12 @@ public class CancellationInsurance {
     public boolean deleteCarInsurance(String userName) throws DatabaseException {
         return new ContractDAOImpl().deleteCarInsurance(userName);
     }
+
+    public long retrievePenaltyFeeInsuranceDriver(String userName) throws DatabaseException {
+        return new InsuranceDAOImpl().retrievePenaltyFeeInsuranceDriver(userName);
+    }
+
+    public boolean deleteDriverInsurance(String userName) throws DatabaseException {
+        return new ContractDAOImpl().deleteDriverInsurance(userName);
+    }
 }

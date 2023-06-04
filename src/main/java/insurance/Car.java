@@ -4,6 +4,15 @@ import customer.Customer;
 
 public class Car extends Insurance {
 
+    public int getNumber() {
+        return Number;
+    }
+
+    public void setNumber(int number) {
+        Number = number;
+    }
+
+    private int Number;
     private int carInsuranceType;
     private String ProductID;
     private String CustomerID;

@@ -58,11 +58,16 @@ public class EmployeeDAOImpl extends Database implements EmployeeDAO {
     }
     @Override
     public List<Car> retrieveCarUnderWritingList() throws DatabaseException {
-            String query = "SELECT * FROM TmpCarInsuranceProduct;";
+            String query = "SELECT * FROM Customer " +
+                    "JOIN InsuranceProduct " +
+                    "ON Customer.CustomerID = InsuranceProduct.CustomerID " +
+                    "WHERE InsuranceProduct.ProductID = '1' AND InsuranceProduct.EmployeeUnderWriting IS NULL " +
+                    "ORDER BY InsuranceProduct.Number";
             try (ResultSet rs = super.retrieve(query)) {
                 List<Car> carList = new ArrayList<>();
                 while(rs.next()) {
                     Car car = new Car(null);
+                    car.setNumber(rs.getInt("Number"));
                     car.setProductID(rs.getString("ProductID"));
                     car.setCustomerID(rs.getString("CustomerID"));
                     car.setCustomerName(rs.getString("CustomerName"));
@@ -84,7 +89,7 @@ public class EmployeeDAOImpl extends Database implements EmployeeDAO {
         return super.delete(query);
     }
     @Override
-    public boolean updateCarUnderWriting(Car car) throws DatabaseException {
+    public boolean updateCarUnderWriting(Car car, String employeeName) throws DatabaseException {
         String query = "SELECT EmployeeID FROM Employee WHERE TeamNum = 2 ORDER BY RAND() LIMIT 2";
         List<String> teamID = new ArrayList<>();
         try (ResultSet rs = super.retrieve(query)) {
@@ -97,19 +102,29 @@ public class EmployeeDAOImpl extends Database implements EmployeeDAO {
         LocalDate currentDate = LocalDate.now();
         LocalDate dateIn10Years = currentDate.plusYears(10);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        query = "INSERT INTO CarInsuranceProduct (ProductID, CustomerID, CustomerName, PhoneNum, DriverLicense, CarModel, CarNum, Price, EmployeeOne, EmployeeTwo, subcriptionDate, coverageExpirationDate) VALUES ('"
-                + car.getProductID() + "', '" + car.getCustomerID() + "', '" + car.getCustomerName() + "', '"
-                + car.getPhoneNum() + "', '" + car.getDriverLicense() + "', '" + car.getCarModel() + "', '" + car.getCarNum() + "', " + car.getPrice() + ", '" + teamID.get(0)  + "', '" + teamID.get(1) +"', '"
-                + currentDate.format(formatter) + "', '" +  dateIn10Years.format(formatter) + "')";
-        return super.create(query);
+        query = "UPDATE InsuranceProduct SET ProductID = '" + car.getProductID()
+                + "', CustomerID = '" + car.getCustomerID()
+                + "', Price = " + car.getPrice()
+                + ", EmployeeUnderWriting = '" + employeeName
+                + "', EmployeeInChargeOne = '" + teamID.get(0)
+                + "', EmployeeInChargeTwo = '" + teamID.get(1)
+                + "', SubcriptionDate = '" + currentDate.format(formatter)
+                + "', CoverageExpirationDate = '" + dateIn10Years.format(formatter)
+                + "' WHERE Number = " + car.getNumber();
+        return super.update(query);
     }
     @Override
     public List<Driver> retrieveDriverUnderWritingList() throws DatabaseException {
-        String query = "SELECT * FROM TmpDriverInsuranceProduct;";
+        String query = "SELECT * FROM Customer " +
+                "JOIN InsuranceProduct " +
+                "ON Customer.CustomerID = InsuranceProduct.CustomerID " +
+                "WHERE InsuranceProduct.ProductID = '2' AND InsuranceProduct.EmployeeUnderWriting IS NULL " +
+                "ORDER BY InsuranceProduct.Number";
         try (ResultSet rs = super.retrieve(query)) {
             List<Driver> driverList = new ArrayList<>();
             while(rs.next()) {
                 Driver driver = new Driver(null);
+                driver.setNumber(rs.getInt("Number"));
                 driver.setProductID(rs.getString("ProductID"));
                 driver.setCustomerID(rs.getString("CustomerID"));
                 driver.setCustomerName(rs.getString("CustomerName"));
@@ -129,7 +144,7 @@ public class EmployeeDAOImpl extends Database implements EmployeeDAO {
         return super.delete(query);
     }
     @Override
-    public boolean updateDriverUnderWriting(Driver driver) throws DatabaseException {
+    public boolean updateDriverUnderWriting(Driver driver, String employeeName) throws DatabaseException {
         String query = "SELECT EmployeeID FROM Employee WHERE TeamNum = 2 ORDER BY RAND() LIMIT 2";
         List<String> teamID = new ArrayList<>();
         try (ResultSet rs = super.retrieve(query)) {
@@ -142,10 +157,15 @@ public class EmployeeDAOImpl extends Database implements EmployeeDAO {
         LocalDate currentDate = LocalDate.now();
         LocalDate dateIn20Years = currentDate.plusYears(20);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        query = "INSERT INTO DriverInsuranceProduct (ProductID, CustomerID, CustomerName, PhoneNum, DriverLicense, Price, EmployeeOne, EmployeeTwo, subcriptionDate, coverageExpirationDate) VALUES ('"
-                + driver.getProductID() + "', '" + driver.getCustomerID() + "', '" + driver.getCustomerName() + "', '"
-                + driver.getPhoneNum() + "', '" + driver.getDriverLicense() + "', " + driver.getPrice() + ", '" + teamID.get(0)  + "', '" + teamID.get(1) +"', '"
-                + currentDate.format(formatter) + "', '" +  dateIn20Years.format(formatter) + "')";
+        query = "UPDATE InsuranceProduct SET ProductID = '" + driver.getProductID()
+                + "', CustomerID = '" + driver.getCustomerID()
+                + "', Price = " + driver.getPrice()
+                + ", EmployeeUnderWriting = '" + employeeName
+                + "', EmployeeInChargeOne = '" + teamID.get(0)
+                + "', EmployeeInChargeTwo = '" + teamID.get(1)
+                + "', SubcriptionDate = '" + currentDate.format(formatter)
+                + "', CoverageExpirationDate = '" + dateIn20Years.format(formatter)
+                + "' WHERE Number = " + driver.getNumber();
         return super.create(query);
     }
     @Override
@@ -167,9 +187,4 @@ public class EmployeeDAOImpl extends Database implements EmployeeDAO {
         String query = "SELECT EmployeeID FROM Employee WHERE EmployeeID = ? AND TeamNum = ?";
         return super.retrieveTeam(query, new String[]{employeeName, "2"});
     }
-
-
-
-
-
 }

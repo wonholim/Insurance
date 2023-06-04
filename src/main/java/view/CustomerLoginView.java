@@ -30,7 +30,11 @@ public class CustomerLoginView {
                         retrieveInsurance(bufferedReader);
                         break;
                     case "2":
-                        printRegisterInsurance();
+                        String printAllInsurance = printRegisterInsurance();
+                        if(printAllInsurance == null) {
+                            System.out.println("가입된 보험 내역이 존재하지 않습니다.");
+                            break;
+                        }
                         break;
                     case "3":
                         String printInsurance = printRegisterInsurance();
@@ -170,7 +174,7 @@ public class CustomerLoginView {
         if(printInsurance.contains("Driver")) {
             if(!new InsuranceDAOImpl().retrieveInjuryInsurance(userName)){
                 Injury injury = printInjuryReportMenu(bufferedReader);
-                if(new InsuranceDAOImpl().insertInjury(injury)){
+                if(new InsuranceDAOImpl().insertInjury(injury, userName)){
                     System.out.println("상해 접수가 완료되었습니다. 사고 처리 담당자가 유선으로 안내를 드릴 예정 입니다. 감사합니다.");
                 }else {
                     System.out.println("상해 접수 정보 저장을 실패했습니다. 시스템에 직접 등록하시기 바랍니다.");
@@ -188,7 +192,7 @@ public class CustomerLoginView {
         if(printInsurance.contains("Car")) {
             if(!new InsuranceDAOImpl().retrieveAccidentInsurance(userName)){
                 Accident accident = printCarAccidentReportMenu(bufferedReader);
-                if(new InsuranceDAOImpl().insertAccident(accident)){
+                if(new InsuranceDAOImpl().insertAccident(accident, userName)){
                     System.out.println("사고 접수가 완료되었습니다. 사고 처리 담당자가 유선으로 안내를 드릴 예정 입니다. 감사합니다.");
                 } else {
                     System.out.println("사고 접수 정보 저장을 실패했습니다. 시스템에 직접 등록하시기 바랍니다.");
@@ -198,7 +202,6 @@ public class CustomerLoginView {
             }
         } else {
             System.out.println("해당 보험에 가입된 내역이 없습니다.");
-            return;
         }
     }
 
@@ -325,12 +328,16 @@ public class CustomerLoginView {
                         switch (select) {
                             case "1":
                                 Customer customer = new CustomerDAOImpl().retrieveUserData(userName);
-                                if(new ContractDAOImpl().insertCarInsuranceProduct(customer, "1", (int) (new Car(null).subscribe() * new Car(null).calculateRate(customer)))){
-                                    System.out.println("자동차 보험 가입 신청이 완료되었습니다. 검증 후 3일 뒤 가입 신청 결과를 확인할 수 있습니다.");
+                                if(!new ContractDAOImpl().retrieveInsuranceProduct(userName, "1")){
+                                    if(new ContractDAOImpl().insertInsuranceProduct(customer, "1", (int) (new Car(null).subscribe() * new Car(null).calculateRate(customer)))){
+                                        System.out.println("자동차 보험 가입 신청이 완료되었습니다. 검증 후 3일 뒤 가입 신청 결과를 확인할 수 있습니다.");
+                                    } else {
+                                        System.out.println("보험 가입에 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+                                    }
                                 }else{
                                     System.out.println("이미 등록된 보험이거나, 보험 가입이 거절 되었습니다.");
                                 }
-                                break OneOut;
+                                break;
                             case "r": break OneOut;
                             default : System.out.println("입력값이 올바르지 않습니다.");
                         }
@@ -350,12 +357,16 @@ public class CustomerLoginView {
                         switch (select) {
                             case "1":
                                 Customer customer = new CustomerDAOImpl().retrieveUserData(userName);
-                                if(new ContractDAOImpl().insertDriverInsuranceProduct(customer, "2", (int) (new Car(null).subscribe() * new Car(null).calculateRate(customer)))){
-                                    System.out.println("운전자 보험 가입 신청이 완료되었습니다. 검증 후 3일 뒤 가입 신청 결과를 확인할 수 있습니다.");
+                                if(!new ContractDAOImpl().retrieveInsuranceProduct(userName, "2")){
+                                    if(new ContractDAOImpl().insertInsuranceProduct(customer, "2", (int) (new Driver(null).subscribe() * new Car(null).calculateRate(customer)))){
+                                        System.out.println("운전자 보험 가입 신청이 완료되었습니다. 검증 후 3일 뒤 가입 신청 결과를 확인할 수 있습니다.");
+                                    } else {
+                                        System.out.println("보험 가입에 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+                                    }
                                 }else{
                                     System.out.println("이미 등록된 보험거나, 보험 가입이 거절 되었습니다.");
                                 }
-                                break TwoOut;
+                                break;
                             case "r":
                                 break TwoOut;
                             default : System.out.println("입력값이 올바르지 않습니다.");
@@ -373,7 +384,7 @@ public class CustomerLoginView {
         if(printInsurance.contains("Driver")){
             while(true) {
                 System.out.print("발생하는 위약금 : ");
-                long penaltyFee = new InsuranceDAOImpl().retrievePenaltyFeeInsuranceDriver(userName);
+                long penaltyFee = new CancellationInsurance().retrievePenaltyFeeInsuranceDriver(userName);
                 System.out.println(penaltyFee + "원");
                 if(penaltyFee == 0) {
                     System.out.println("해당 보험은 청약철회가 가능합니다.");
@@ -386,7 +397,7 @@ public class CustomerLoginView {
                 }
                 select = bufferedReader.readLine().trim();
                 if(select.equals("1")){
-                    if(new ContractDAOImpl().deleteDriverInsurance(userName)) {
+                    if(new CancellationInsurance().deleteDriverInsurance(userName)) {
                         System.out.println("보험이 해지 되었습니다.");
                     }else{
                         System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
@@ -488,18 +499,6 @@ public class CustomerLoginView {
     private Injury printInjuryReportMenu(BufferedReader bufferedReader) throws IOException {
         Injury injury = new Injury();
         System.out.println("***************** InjuryReport MENU *****************");
-        System.out.print("아이디 : ");
-        String customerID = bufferedReader.readLine().trim();
-        injury.setCustomerID(customerID);
-        System.out.print("이름 : ");
-        String customerName = bufferedReader.readLine().trim();
-        injury.setCustomerName(customerName);
-        System.out.print("주민등록번호 : ");
-        String regitrationNumber = bufferedReader.readLine().trim();
-        injury.setRegistrationNumber(regitrationNumber);
-        System.out.print("전화번호 : ");
-        String phoneNum = bufferedReader.readLine().trim();
-        injury.setPhoneNum(phoneNum);
         System.out.print("사고 장소 : ");
         String location = bufferedReader.readLine().trim();
         injury.setLocation(location);
@@ -515,27 +514,12 @@ public class CustomerLoginView {
     private Accident printCarAccidentReportMenu(BufferedReader bufferedReader) throws IOException {
         Accident accident = new Accident();
         System.out.println("***************** AccidentReport MENU *****************");
-        System.out.print("아이디 : ");
-        String customerID = bufferedReader.readLine().trim();
-        accident.setCustomerID(customerID);
-        System.out.print("이름 :");
-        String customerName = bufferedReader.readLine().trim();
-        accident.setCustomerName(customerName);
-        System.out.print("주민등록번호 : ");
-        String regitrationNumber = bufferedReader.readLine().trim();
-        accident.setRegistrationNumber(regitrationNumber);
-        System.out.print("전화번호 : ");
-        String phoneNum = bufferedReader.readLine().trim();
-        accident.setPhoneNum(phoneNum);
         System.out.print("사고 장소 : ");
         String location = bufferedReader.readLine().trim();
         accident.setLocation(location);
         System.out.print("사고 일시(YYYY-MM-DD) : ");
         String accidentDate = bufferedReader.readLine().trim();
         accident.setAccidentDate(accidentDate);
-        System.out.print("차량 번호 : ");
-        String carNum = bufferedReader.readLine().trim();
-        accident.setCarNum(carNum);
         System.out.print("서비스 종류 (1. 현장 출동, 2. 긴급 출동) : ");
         int service = Integer.parseInt(bufferedReader.readLine().trim());
         accident.setService(service);

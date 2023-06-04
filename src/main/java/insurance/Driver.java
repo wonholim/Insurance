@@ -3,6 +3,16 @@ package insurance;
 import customer.Customer;
 
 public class Driver extends Insurance {
+
+    public int getNumber() {
+        return Number;
+    }
+
+    public void setNumber(int number) {
+        Number = number;
+    }
+
+    private int Number;
     public String getSubcriptionDate() {
         return subcriptionDate;
     }

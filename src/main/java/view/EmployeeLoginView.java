@@ -45,11 +45,7 @@ public class EmployeeLoginView {
                                         carIndex = printTmpCarCustomer(carCustomers, bufferedReader);
                                         if(carIndex != -1) break;
                                     }
-                                    if(!new UnderWriting().deleteCarUnderWriting(carCustomers.get(carIndex))){
-                                        System.out.println("검증 대상 삭제에 오류가 발생했습니다.");
-                                        break;
-                                    }
-                                    if(!new UnderWriting().updateCarUnderWriting(carCustomers.get(carIndex))){
+                                    if(!new UnderWriting().updateCarUnderWriting(carCustomers.get(carIndex), employeeName)){
                                         System.out.println("해당 가입 신청 정보를 저장하지 못하였습니다.");
                                         break;
                                     }
@@ -66,11 +62,7 @@ public class EmployeeLoginView {
                                         driverIndex = printTmpDriverCustomer(driverCustomers, bufferedReader);
                                         if(driverIndex != -1) break;
                                     }
-                                    if(!new UnderWriting().deleteDriverUnderWriting(driverCustomers.get(driverIndex))){
-                                        System.out.println("검증 대상 삭제에 오류가 발생했습니다.");
-                                        break;
-                                    }
-                                    if(!new UnderWriting().updateDriverUnderWriting(driverCustomers.get(driverIndex))){
+                                    if(!new UnderWriting().updateDriverUnderWriting(driverCustomers.get(driverIndex), employeeName)){
                                         System.out.println("해당 가입 신청 정보를 저장하지 못하였습니다.");
                                         break;
                                     }
@@ -103,10 +95,6 @@ public class EmployeeLoginView {
                                         accidentIndex = printTmpAccidentCustomer(accidents, bufferedReader);
                                         if (accidentIndex != -1) break;
                                     }
-                                    if (!new AccidentHandling().deleteAccidentInsurance(accidents.get(accidentIndex))) {
-                                        System.out.println("DB 삭제에 오류가 발생했습니다.");
-                                        break;
-                                    }
                                     if (!new AccidentHandling().updateAccidentInsurance(accidents.get(accidentIndex))) {
                                         System.out.println("DB 업데이트에 오류가 발생했습니다.");
                                         break;
@@ -123,10 +111,6 @@ public class EmployeeLoginView {
                                     while (true) {
                                         injuryIndex = printTmpInjuryCustomer(injuries, bufferedReader);
                                         if (injuryIndex != -1) break;
-                                    }
-                                    if (!new AccidentHandling().deleteInjuryInsurance(injuries.get(injuryIndex))) {
-                                        System.out.println("DB 삭제에 오류가 발생했습니다.");
-                                        break;
                                     }
                                     if (!new AccidentHandling().updateInjuryInsurance(injuries.get(injuryIndex))) {
                                         System.out.println("DB 업데이트에 오류가 발생했습니다.");
@@ -314,7 +298,7 @@ public class EmployeeLoginView {
         System.out.println("***************** Compensation Customers *****************");
         int count = 0;
         for(InjuryReport list : injuryReports){
-            System.out.println(count++ + " | 아이디 : " + list.getCustomerID() + "최종 보상금 : " + list.getCompensation());
+            System.out.println(count++ + " | 아이디 : " + list.getCustomerID() + " 최종 보상금 : " + list.getCompensation());
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
         int select = Integer.parseInt(bufferedReader.readLine().trim());

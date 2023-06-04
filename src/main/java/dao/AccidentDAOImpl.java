@@ -16,7 +16,10 @@ public class AccidentDAOImpl extends Database implements AccidentDAO {
 
     @Override
     public List<Accident> retrieveAccidentList() throws DatabaseException {
-        String query = "SELECT * FROM TmpAccidentInsurance;";
+        String query = "SELECT *" +
+                "FROM Customer " +
+                "JOIN AccidentAccept ON Customer.CustomerID = AccidentAccept.CustomerID " +
+                "WHERE AccidentAccept.EmployeeOne IS NULL AND AccidentAccept.EmployeeTwo IS NULL; ";
         try (ResultSet rs = super.retrieve(query)) {
             List<Accident> accidentList = new ArrayList<>();
             while(rs.next()) {
@@ -48,11 +51,9 @@ public class AccidentDAOImpl extends Database implements AccidentDAO {
             e.printStackTrace();
         }
         LocalDate currentDate = LocalDate.now();
-        query = "INSERT INTO AccidentInsurance (CustomerID, CustomerName, RegistrationNumber, PhoneNum, Location, AccidentDate, CarNum,Service , ProcessinDate,EmployeeOne, EmployeeTwo) VALUES ('"
-                + accident.getCustomerID() + "', '" + accident.getCustomerName() + "', '" + accident.getRegistrationNumber() + "', '"
-                + accident.getPhoneNum() + "', '" + accident.getLocation() + "', '" + accident.getAccidentDate() + "', '"
-                + accident.getCarNum() + "' ," + accident.getService() + ", '" + currentDate.toString() +"', '" + teamID.get(0)  + "', '" + teamID.get(1) + "')";
-        return super.create(query);
+        query = "UPDATE AccidentAccept SET ProcessinDate = '"
+                + currentDate.toString() +"', EmployeeOne = '" + teamID.get(0)  + "', EmployeeTwo = '" + teamID.get(1) + "' WHERE CustomerID = '" + accident.getCustomerID() + "'";
+        return super.update(query);
     }
     @Override
     public boolean deleteAccidentInsurance(Accident accident) throws DatabaseException {
@@ -62,16 +63,16 @@ public class AccidentDAOImpl extends Database implements AccidentDAO {
     @Override
     public boolean updateAccidentReport(AccidentReport accidentReport, String employeeName, int i) throws DatabaseException {
         String query = "";
-        if(i == 0) query = "UPDATE RequestCarInsurance SET Compensation = '" + accidentReport.getCompensation() + "', EmployeeOne = '" + employeeName + "' WHERE CustomerID = '" + accidentReport.getCustomerID() + "';";
-        else if(i == 1) query = "UPDATE RequestCarInsurance SET Compensation = '" + accidentReport.getCompensation() + "', EmployeeTwo = '" + employeeName + "' WHERE CustomerID = '" + accidentReport.getCustomerID() + "';";
+        if(i == 0) query = "UPDATE AccidentReport SET Compensation = '" + accidentReport.getCompensation() + "', EmployeeOne = '" + employeeName + "' WHERE CustomerID = '" + accidentReport.getCustomerID() + "';";
+        else if(i == 1) query = "UPDATE AccidentReport SET Compensation = '" + accidentReport.getCompensation() + "', EmployeeTwo = '" + employeeName + "' WHERE CustomerID = '" + accidentReport.getCustomerID() + "';";
         return super.update(query);
     }
     @Override
     public List<AccidentReport> retrieveAccidentList(int i) throws DatabaseException {
         String query = "";
-        if(i == 0) query = "SELECT * FROM RequestCarInsurance WHERE EmployeeOne IS NULL;";
-        else if(i == 1) query = "SELECT * FROM RequestCarInsurance WHERE EmployeeOne IS NOT NULL AND EmployeeTwo IS NULL;";
-        else  query = "SELECT * FROM RequestCarInsurance WHERE EmployeeOne IS NOT NULL AND EmployeeTwo IS NOT NULL AND EmployeeThree IS NULL;";
+        if(i == 0) query = "SELECT * FROM AccidentReport WHERE EmployeeOne IS NULL;";
+        else if(i == 1) query = "SELECT * FROM AccidentReport WHERE EmployeeOne IS NOT NULL AND EmployeeTwo IS NULL;";
+        else  query = "SELECT * FROM AccidentReport WHERE EmployeeOne IS NOT NULL AND EmployeeTwo IS NOT NULL AND EmployeeThree IS NULL;";
         try (ResultSet rs = super.retrieve(query)) {
             List<AccidentReport> accidentReportList = new ArrayList<>();
             while(rs.next()) {
@@ -98,7 +99,7 @@ public class AccidentDAOImpl extends Database implements AccidentDAO {
     }
     @Override
     public boolean deleteAccidentReport(AccidentReport accidentReport) throws DatabaseException {
-        String query = "DELETE FROM RequestCarInsurance WHERE CustomerID = '" + accidentReport.getCustomerID() + "';";
+        String query = "DELETE FROM AccidentReport WHERE CustomerID = '" + accidentReport.getCustomerID() + "';";
         return super.delete(query);
     }
 }

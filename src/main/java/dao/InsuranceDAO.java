@@ -6,8 +6,6 @@ import insurance.AccidentReport;
 import insurance.Injury;
 import insurance.InjuryReport;
 
-import java.util.List;
-
 public interface InsuranceDAO {
     String retriveAllInsuranceProduct(String userName) throws DatabaseException;
     long retrievePenaltyFeeInsuranceCar(String userName) throws DatabaseException;
@@ -18,8 +16,8 @@ public interface InsuranceDAO {
     boolean retrieveInjuryInsurance(String userName) throws DatabaseException;
     boolean retrieveAccidentCompensation(AccidentReport accidentReport) throws DatabaseException;
     boolean retrieveInjuryCompensation(InjuryReport injuryReports) throws DatabaseException;
-    boolean insertAccident(Accident accident) throws DatabaseException;
-    boolean insertInjury(Injury injury) throws DatabaseException;
+    boolean insertAccident(Accident accident, String userName) throws DatabaseException;
+    boolean insertInjury(Injury injury, String userName) throws DatabaseException;
     boolean retrieveAccident(String userName) throws DatabaseException;
     boolean retrieveInjury(String userName) throws DatabaseException;
 }

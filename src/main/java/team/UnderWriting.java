@@ -16,23 +16,15 @@ public class UnderWriting {
         return new EmployeeDAOImpl().retrieveCarUnderWritingList();
     }
 
-    public boolean deleteCarUnderWriting(Car car) throws DatabaseException {
-        return new EmployeeDAOImpl().deleteCarUnderWriting(car);
-    }
-
-    public boolean updateCarUnderWriting(Car car) throws DatabaseException {
-        return new EmployeeDAOImpl().updateCarUnderWriting(car);
+    public boolean updateCarUnderWriting(Car car, String employeeName) throws DatabaseException {
+        return new EmployeeDAOImpl().updateCarUnderWriting(car, employeeName);
     }
 
     public List<Driver> retrieveDriverUnderWritingList() throws DatabaseException {
         return new EmployeeDAOImpl().retrieveDriverUnderWritingList();
     }
 
-    public boolean deleteDriverUnderWriting(Driver driver) throws DatabaseException {
-        return new EmployeeDAOImpl().deleteDriverUnderWriting(driver);
-    }
-
-    public boolean updateDriverUnderWriting(Driver driver) throws DatabaseException {
-        return new EmployeeDAOImpl().updateDriverUnderWriting(driver);
+    public boolean updateDriverUnderWriting(Driver driver, String employeeName) throws DatabaseException {
+        return new EmployeeDAOImpl().updateDriverUnderWriting(driver, employeeName);
     }
 }

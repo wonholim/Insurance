@@ -4,8 +4,8 @@ import customer.Customer;
 import exception.DatabaseException;
 
 public interface ContractDAO {
-    boolean insertCarInsuranceProduct(Customer customer, String productID, int price) throws DatabaseException;
-    boolean insertDriverInsuranceProduct(Customer customer, String productID, int price) throws DatabaseException;
+    boolean retrieveInsuranceProduct(String userName, String productID) throws DatabaseException;
+    boolean insertInsuranceProduct(Customer customer, String productID, int price) throws DatabaseException;
     boolean updateDateCarInsurance(String userName) throws DatabaseException;
     boolean updateDateDriverInsurance(String userName) throws DatabaseException;
     boolean deleteCarInsurance(String userName) throws DatabaseException;

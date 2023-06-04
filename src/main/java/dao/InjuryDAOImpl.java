@@ -16,7 +16,11 @@ public class InjuryDAOImpl extends Database implements InjuryDAO {
 
     @Override
     public List<Injury> retrieveInjuryList() throws DatabaseException {
-        String query = "SELECT * FROM TmpDriverInsurance;";
+        String query = "SELECT * " +
+                "FROM Customer c " +
+                "JOIN InjuryAccept ia " +
+                "ON c.CustomerID = ia.CustomerID " +
+                "WHERE ia.EmployeeOne IS NULL AND ia.EmployeeTwo IS NULL;";
         try (ResultSet rs = super.retrieve(query)) {
             List<Injury> injuries = new ArrayList<>();
             while(rs.next()) {
@@ -54,18 +58,15 @@ public class InjuryDAOImpl extends Database implements InjuryDAO {
             e.printStackTrace();
         }
         LocalDate currentDate = LocalDate.now();
-        query = "INSERT INTO DriverInsurance (CustomerID, CustomerName, RegistrationNumber, PhoneNum, Location, InjuryDate, Disease, ProcessinDate , EmployeeOne, EmployeeTwo) VALUES ('"
-                + injury.getCustomerID() + "', '" + injury.getCustomerName() + "', '" + injury.getRegistrationNumber() + "', '"
-                + injury.getPhoneNum() + "', '" + injury.getLocation() + "', '" + injury.getInjuryDate() + "', '"
-                + injury.getDisease() + "', '" + currentDate.toString() +"', '" + teamID.get(0)  + "', '" + teamID.get(1) + "')";
+        query = "UPDATE InjuryAccept SET ProcessinDate = '" + currentDate.toString() + "', EmployeeOne = '" + teamID.get(0) + "', EmployeeTwo = '" + teamID.get(1) + "' WHERE CustomerID = '" + injury.getCustomerID() + "'";
         return super.create(query);
     }
     @Override
     public List<InjuryReport> retrieveInjuryList(int i) throws DatabaseException {
         String query = "";
-        if(i == 0) query = "SELECT * FROM RequestInjuryInsurance WHERE EmployeeOne IS NULL;";
-        else if(i == 1) query = "SELECT * FROM RequestInjuryInsurance WHERE EmployeeOne IS NOT NULL AND EmployeeTwo IS NULL;";
-        else  query = "SELECT * FROM RequestInjuryInsurance WHERE EmployeeOne IS NOT NULL AND EmployeeTwo IS NOT NULL AND EmployeeThree IS NULL;";
+        if(i == 0) query = "SELECT * FROM InjuryReport WHERE EmployeeOne IS NULL;";
+        else if(i == 1) query = "SELECT * FROM InjuryReport WHERE EmployeeOne IS NOT NULL AND EmployeeTwo IS NULL;";
+        else  query = "SELECT * FROM InjuryReport WHERE EmployeeOne IS NOT NULL AND EmployeeTwo IS NOT NULL AND EmployeeThree IS NULL;";
         try (ResultSet rs = super.retrieve(query)) {
             List<InjuryReport> injuryReports = new ArrayList<>();
             while(rs.next()) {
@@ -89,13 +90,13 @@ public class InjuryDAOImpl extends Database implements InjuryDAO {
     @Override
     public boolean updateInjuryReport(InjuryReport injuryReport, String employeeName, int i) throws DatabaseException {
         String query = "";
-        if (i == 0) query = "UPDATE RequestInjuryInsurance SET Compensation = '" + injuryReport.getCompensation() + "', EmployeeOne = '" + employeeName + "' WHERE CustomerID = '" + injuryReport.getCustomerID() + "';";
-        else if(i == 1) query = "UPDATE RequestInjuryInsurance SET Compensation = '" + injuryReport.getCompensation() + "', EmployeeTwo = '" + employeeName + "' WHERE CustomerID = '" + injuryReport.getCustomerID() + "';";
+        if (i == 0) query = "UPDATE InjuryReport SET Compensation = '" + injuryReport.getCompensation() + "', EmployeeOne = '" + employeeName + "' WHERE CustomerID = '" + injuryReport.getCustomerID() + "';";
+        else if(i == 1) query = "UPDATE InjuryReport SET Compensation = '" + injuryReport.getCompensation() + "', EmployeeTwo = '" + employeeName + "' WHERE CustomerID = '" + injuryReport.getCustomerID() + "';";
         return super.update(query);
     }
     @Override
     public boolean deleteInjuryReport(InjuryReport injuryReport) throws DatabaseException {
-        String query = "DELETE FROM RequestInjuryInsurance WHERE CustomerID = '" + injuryReport.getCustomerID() + "';";
+        String query = "DELETE FROM InjuryReport WHERE CustomerID = '" + injuryReport.getCustomerID() + "';";
         return super.delete(query);
     }
 }
