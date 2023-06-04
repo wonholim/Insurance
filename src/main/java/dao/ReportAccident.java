@@ -1,5 +1,6 @@
 package dao;
 
+import team.AccidentHandling;
 import customer.Customer;
 
 public class ReportAccident {

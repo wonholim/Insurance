@@ -1,20 +1,21 @@
 package view;
 
-import controller.CustomerController;
-import insurance.Accident;
-import insurance.AccidentReport;
-import insurance.Injury;
-import insurance.InjuryReport;
+import contract.MaturityRenewalInsurance;
+import contract.PolicyRenewalDate;
+import customer.CancellationInsurance;
+import customer.Customer;
+import dao.ContractDAOImpl;
+import dao.CustomerDAOImpl;
+import dao.InsuranceDAOImpl;
+import insurance.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 
 public class CustomerLoginView {
     private String userName;
-    private CustomerController customerController;
     public CustomerLoginView(String userName) {
         this.userName = userName;
-        this.customerController = new CustomerController();
     }
     public void customerSelect(BufferedReader bufferedReader) {
         try {
@@ -25,58 +26,7 @@ public class CustomerLoginView {
                 System.out.println(select);
                 switch (select) {
                     case "1":
-                        One:
-                        while(true) {
-                            printInsuranceProduct();
-                            select = bufferedReader.readLine().trim();
-                            switch (select) {
-                                case "1":
-                                    String product = this.customerController.getInsuranceProduct(this.userName, "1");
-                                    if (product == null) {System.out.println("해당 보험의 세부 내역을 불러오는데 실패하였습니다.");}
-                                    else System.out.println(product);
-                                    OneOut:
-                                    while(true) {
-                                        printregisterInsuranceProduct();
-                                        select = bufferedReader.readLine().trim();
-                                        switch (select) {
-                                            case "1":
-                                                if(this.customerController.registerInsuranceProduct(this.userName, "1")){
-                                                    System.out.println("자동차 보험 가입 신청이 완료되었습니다. 검증 후 3일 뒤 가입 신청 결과를 확인할 수 있습니다.");
-                                                }else{
-                                                    System.out.println("이미 등록된 보험거나, 보험 가입이 거절 되었습니다.");
-                                                }
-                                                break OneOut;
-                                            case "r": break OneOut;
-                                            default : System.out.println("입력값이 올바르지 않습니다.");
-                                        }
-                                    }
-                                    break;
-                                case "2":
-                                    String driverProduct = this.customerController.getInsuranceProduct(this.userName, "2");
-                                    if(driverProduct == null) {System.out.println("해당 보험의 세부 내역을 불러오는데 실패하였습니다.");}
-                                    else System.out.println(driverProduct);
-                                    TwoOut:
-                                    while(true) {
-                                        printregisterInsuranceProduct();
-                                        select = bufferedReader.readLine().trim();
-                                        switch (select) {
-                                            case "1":
-                                                if(this.customerController.registerInsuranceProduct(this.userName, "2")){
-                                                    System.out.println("운전자 보험 가입 신청이 완료되었습니다. 검증 후 3일 뒤 가입 신청 결과를 확인할 수 있습니다.");
-                                                }else{
-                                                    System.out.println("이미 등록된 보험거나, 보험 가입이 거절 되었습니다.");
-                                                }
-                                                break TwoOut;
-                                            case "r":
-                                                break TwoOut;
-                                            default : System.out.println("입력값이 올바르지 않습니다.");
-                                        }
-                                    }
-                                    break;
-                                case "r": break One;
-                                default : System.out.println("입력값이 올바르지 않습니다.");
-                            }
-                        }
+                        retrieveInsurance(bufferedReader);
                         break;
                     case "2":
                         printRegisterInsurance();
@@ -93,72 +43,10 @@ public class CustomerLoginView {
                             select = bufferedReader.readLine().trim();
                             switch (select) {
                                 case "1":
-                                    if(printInsurance.contains("Car")){
-                                        while(true) {
-                                            System.out.print("발생하는 위약금 : ");
-                                            long penaltyFee = new CustomerController().getPenaltyFeeInsuranceCar(userName);
-                                            System.out.println(penaltyFee + "원");
-                                            if(penaltyFee == 0) {
-                                                System.out.println("해당 보험은 청약철회가 가능합니다.");
-                                                // cjdd
-                                                System.out.println("1. 청약 철회 한다.");
-                                                System.out.println("2. 청약 철회 하지않는다.");
-                                            }else {
-                                                System.out.println("1. 해지한다.");
-                                                System.out.println("2. 해지하지않는다.");
-                                            }
-                                            select = bufferedReader.readLine().trim();
-                                            if(select.equals("1")){
-                                                if(new CustomerController().cancellationCarInsurance(userName)) {
-                                                    System.out.println("보험이 해지 되었습니다.");
-                                                }else{
-                                                    System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
-                                                }
-                                                break;
-                                            }else if(select.equals("2")){
-                                                System.out.println("보험 해지를 취소하였습니다.");
-                                                break;
-                                            }else {
-                                                System.out.println("입력값이 올바르지 않습니다.");
-                                            }
-                                        }
-                                    }else{
-                                        System.out.println("해당 보험에 가입된 내역이 없습니다.");
-                                    }
+                                    cancellationInsuranceCar(bufferedReader, printInsurance);
                                     break;
                                 case "2":
-                                    if(printInsurance.contains("Driver")){
-                                        while(true) {
-                                            System.out.print("발생하는 위약금 : ");
-                                            long penaltyFee = new CustomerController().getPenaltyFeeInsuranceDriver(userName);
-                                            System.out.println(penaltyFee + "원");
-                                            if(penaltyFee == 0) {
-                                                System.out.println("해당 보험은 청약철회가 가능합니다.");
-                                                // 청약 철회 다시 작성
-                                                System.out.println("1. 청약 철회 한다.");
-                                                System.out.println("2. 청약 철회 하지않는다.");
-                                            }else {
-                                                System.out.println("1. 해지한다.");
-                                                System.out.println("2. 해지하지않는다.");
-                                            }
-                                            select = bufferedReader.readLine().trim();
-                                            if(select.equals("1")){
-                                                if(new CustomerController().cancellationDriverInsurance(userName)) {
-                                                    System.out.println("보험이 해지 되었습니다.");
-                                                }else{
-                                                    System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
-                                                }
-                                                break;
-                                            }else if(select.equals("2")){
-                                                System.out.println("보험 해지를 취소하였습니다.");
-                                                break;
-                                            }else {
-                                                System.out.println("입력값이 올바르지 않습니다.");
-                                            }
-                                        }
-                                    }else{
-                                        System.out.println("해당 보험에 가입된 내역이 없습니다.");
-                                    }
+                                    cacellationsInuranceDriver(bufferedReader, printInsurance);
                                     break;
                                 case "r": break ThreeOut;
                                 default : System.out.println("입력값이 올바르지 않습니다.");
@@ -177,102 +65,10 @@ public class CustomerLoginView {
                             select = bufferedReader.readLine().trim();
                             switch (select) {
                                 case "1":
-                                    if(printInsurance.contains("Car")){
-                                        String[] insuranceInformations = new CustomerController().getCarInsuranceInformations(userName);
-                                        printRenewExpirationCarInsurance(insuranceInformations);
-                                        boolean expiredInsurance = new CustomerController().checkForExpiredCarInsuran(userName);
-                                        if(expiredInsurance) {
-                                            System.out.println("보험 계약이 끝나 만기 갱신을 하셔야 합니다.");
-                                            while(true) {
-                                                System.out.println("1. 갱신하기");
-                                                System.out.println("2. 갱신하지않기");
-                                                select = bufferedReader.readLine().trim();
-                                                if(select.equals("1")){
-                                                    if(new CustomerController().renewExpirationCarInsurance(userName)) {
-                                                        System.out.println("보험 갱신이 완료되었습니다.");
-                                                    }else{
-                                                        System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
-                                                    }
-                                                    break;
-                                                }else if(select.equals("2")){
-                                                    System.out.println("보험 갱신을 취소하였습니다.");
-                                                    break;
-                                                }else {
-                                                    System.out.println("입력값이 올바르지 않습니다.");
-                                                }
-                                            }
-                                        }else{
-                                            while(true) {
-                                                System.out.println("1. 갱신하기");
-                                                System.out.println("2. 갱신하지않기");
-                                                select = bufferedReader.readLine().trim();
-                                                if(select.equals("1")){
-                                                    if(new CustomerController().renewExpirationCarInsurance(userName)) {
-                                                        System.out.println("보험 갱신이 완료되었습니다.");
-                                                    }else{
-                                                        System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
-                                                    }
-                                                    break;
-                                                }else if(select.equals("2")){
-                                                    System.out.println("보험 갱신을 취소하였습니다.");
-                                                    break;
-                                                }else {
-                                                    System.out.println("입력값이 올바르지 않습니다.");
-                                                }
-                                            }
-                                        }
-                                    }else{
-                                        System.out.println("해당 보험에 가입된 내역이 없습니다.");
-                                    }
+                                    updateDateCarInsurance(bufferedReader, printInsurance);
                                     break;
                                 case "2":
-                                    if(printInsurance.contains("Driver")){
-                                        String[] insuranceInformations = new CustomerController().getDriverInsuranceInformations(userName);
-                                        printRenewExpirationDriverInsurance(insuranceInformations);
-                                        boolean expiredInsurance = new CustomerController().checkForExpiredDriverInsuran(userName);
-                                        if(expiredInsurance) {
-                                            System.out.println("보험 계약이 끝나 만기 갱신을 하셔야 합니다.");
-                                            while(true) {
-                                                System.out.println("1. 갱신하기");
-                                                System.out.println("2. 갱신하지않기");
-                                                select = bufferedReader.readLine().trim();
-                                                if(select.equals("1")){
-                                                    if(new CustomerController().renewExpirationDriverInsurance(userName)) {
-                                                        System.out.println("보험 갱신이 완료되었습니다.");
-                                                    }else{
-                                                        System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
-                                                    }
-                                                    break;
-                                                }else if(select.equals("2")){
-                                                    System.out.println("보험 갱신을 취소하였습니다.");
-                                                    break;
-                                                }else {
-                                                    System.out.println("입력값이 올바르지 않습니다.");
-                                                }
-                                            }
-                                        }else{
-                                            while(true) {
-                                                System.out.println("1. 갱신하기");
-                                                System.out.println("2. 갱신하지않기");
-                                                select = bufferedReader.readLine().trim();
-                                                if(select.equals("1")){
-                                                    if(new CustomerController().renewExpirationDriverInsurance(userName)) {
-                                                        System.out.println("보험 갱신이 완료되었습니다.");
-                                                    }else{
-                                                        System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
-                                                    }
-                                                    break;
-                                                }else if(select.equals("2")){
-                                                    System.out.println("보험 갱신을 취소하였습니다.");
-                                                    break;
-                                                }else {
-                                                    System.out.println("입력값이 올바르지 않습니다.");
-                                                }
-                                            }
-                                        }
-                                    }else{
-                                        System.out.println("해당 보험에 가입된 내역이 없습니다.");
-                                    }
+                                    updateDateDriverInsurance(bufferedReader, printInsurance);
                                     break;
                                 case "r": break FourOut;
                                 default : System.out.println("입력값이 올바르지 않습니다.");
@@ -291,38 +87,10 @@ public class CustomerLoginView {
                             select = bufferedReader.readLine().trim();
                             switch (select) {
                                 case "1":
-                                    if(printInsurance.contains("Car")) {
-                                        if(!new CustomerController().isAccidentAdd(userName)){
-                                            Accident accident = printCarAccidentReportMenu(bufferedReader);
-                                            if(new CustomerController().AccidentAdd(accident)){
-                                                System.out.println("사고 접수가 완료되었습니다. 사고 처리 담당자가 유선으로 안내를 드릴 예정 입니다. 감사합니다.");
-                                            } else {
-                                                System.out.println("사고 접수 정보 저장을 실패했습니다. 시스템에 직접 등록하시기 바랍니다.");
-                                            }
-                                        } else {
-                                            System.out.println("이미 사고 접수가 완료되었습니다.");
-                                        }
-                                    } else {
-                                        System.out.println("해당 보험에 가입된 내역이 없습니다.");
-                                        break;
-                                    }
+                                    accidentReport(bufferedReader, printInsurance);
                                     break;
                                 case "2":
-                                    if(printInsurance.contains("Driver")) {
-                                        if(!new CustomerController().isInjuryAdd(userName)){
-                                            Injury injury = printInjuryReportMenu(bufferedReader);
-                                            if(new CustomerController().injuryAdd(injury)){
-                                                System.out.println("상해 접수가 완료되었습니다. 사고 처리 담당자가 유선으로 안내를 드릴 예정 입니다. 감사합니다.");
-                                            }else {
-                                                System.out.println("상해 접수 정보 저장을 실패했습니다. 시스템에 직접 등록하시기 바랍니다.");
-                                            }
-                                        } else {
-                                            System.out.println("이미 상해 접수가 완료되었습니다.");
-                                        }
-                                    } else {
-                                        System.out.println("해당 보험에 가입된 내역이 없습니다.");
-                                        break;
-                                    }
+                                    injuryReport(bufferedReader, printInsurance);
                                     break;
                                 case "r": break FiveOut;
                                 default: System.out.println("입력값이 올바르지 않습니다.");
@@ -341,38 +109,10 @@ public class CustomerLoginView {
                             select = bufferedReader.readLine().trim();
                             switch (select) {
                                 case "1":
-                                    if(!new CustomerController().isAccidentAdd(userName)) {
-                                        if(new CustomerController().isAccidentAddProcess(userName)){
-                                            AccidentReport accidentReport = printRequestCarInsurancePayout(bufferedReader);
-                                            accidentReport.setCustomerID(userName);
-                                            if(new CustomerController().requestCarInsurancePayout(accidentReport)) {
-                                                System.out.println("자동차 보험금 신청이 완료되었습니다.");
-                                            } else {
-                                                System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
-                                            }
-                                        } else {
-                                            System.out.println("사고 접수를 한 내역이 존재하지 않습니다.");
-                                        }
-                                    } else {
-                                        System.out.println("현재 사고 처리 승인을 기다리는 중입니다. 승인까지 최대 3일 소요됩니다.");
-                                    }
+                                    carCompensation(bufferedReader);
                                     break;
                                 case "2":
-                                    if(!new CustomerController().isInjuryAdd(userName)) {
-                                        if(new CustomerController().isInjuryAddProcess(userName)){
-                                            InjuryReport injuryReports = printRequestDriverInsurancePayout(bufferedReader);
-                                            injuryReports.setCustomerID(userName);
-                                            if(new CustomerController().requestInjuryInsurancePayout(injuryReports)) {
-                                                System.out.println("상해 보험금 신청이 완료되었습니다.");
-                                            } else {
-                                                System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
-                                            }
-                                        } else {
-                                            System.out.println("사고 접수를 한 내역이 존재하지 않습니다.");
-                                        }
-                                    } else {
-                                        System.out.println("현재 사고 처리 승인을 기다리는 중입니다. 승인까지 최대 3일 소요됩니다.");
-                                    }
+                                    driverCompensation(bufferedReader);
                                     break;
                                 case "r":
                                     break SixOut;
@@ -386,6 +126,312 @@ public class CustomerLoginView {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void driverCompensation(BufferedReader bufferedReader) throws IOException {
+        if(!new InsuranceDAOImpl().retrieveInjuryInsurance(userName)) {
+            if(new InsuranceDAOImpl().retrieveInjury(userName)){
+                InjuryReport injuryReports = printRequestDriverInsurancePayout(bufferedReader);
+                injuryReports.setCustomerID(userName);
+                if(new InsuranceDAOImpl().retrieveInjuryCompensation(injuryReports)) {
+                    System.out.println("상해 보험금 신청이 완료되었습니다.");
+                } else {
+                    System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
+                }
+            } else {
+                System.out.println("사고 접수를 한 내역이 존재하지 않습니다.");
+            }
+        } else {
+            System.out.println("현재 사고 처리 승인을 기다리는 중입니다. 승인까지 최대 3일 소요됩니다.");
+        }
+    }
+
+    private void carCompensation(BufferedReader bufferedReader) throws IOException {
+        if(!new InsuranceDAOImpl().retrieveAccidentInsurance(userName)) {
+            if(new InsuranceDAOImpl().retrieveAccident(userName)){
+                AccidentReport accidentReport = printRequestCarInsurancePayout(bufferedReader);
+                accidentReport.setCustomerID(userName);
+                if(new InsuranceDAOImpl().retrieveAccidentCompensation(accidentReport)) {
+                    System.out.println("자동차 보험금 신청이 완료되었습니다.");
+                } else {
+                    System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
+                }
+            } else {
+                System.out.println("사고 접수를 한 내역이 존재하지 않습니다.");
+            }
+        } else {
+            System.out.println("현재 사고 처리 승인을 기다리는 중입니다. 승인까지 최대 3일 소요됩니다.");
+        }
+    }
+
+    private void injuryReport(BufferedReader bufferedReader, String printInsurance) throws IOException {
+        if(printInsurance.contains("Driver")) {
+            if(!new InsuranceDAOImpl().retrieveInjuryInsurance(userName)){
+                Injury injury = printInjuryReportMenu(bufferedReader);
+                if(new InsuranceDAOImpl().insertInjury(injury)){
+                    System.out.println("상해 접수가 완료되었습니다. 사고 처리 담당자가 유선으로 안내를 드릴 예정 입니다. 감사합니다.");
+                }else {
+                    System.out.println("상해 접수 정보 저장을 실패했습니다. 시스템에 직접 등록하시기 바랍니다.");
+                }
+            } else {
+                System.out.println("이미 상해 접수가 완료되었습니다.");
+            }
+        } else {
+            System.out.println("해당 보험에 가입된 내역이 없습니다.");
+            return;
+        }
+    }
+
+    private void accidentReport(BufferedReader bufferedReader, String printInsurance) throws IOException {
+        if(printInsurance.contains("Car")) {
+            if(!new InsuranceDAOImpl().retrieveAccidentInsurance(userName)){
+                Accident accident = printCarAccidentReportMenu(bufferedReader);
+                if(new InsuranceDAOImpl().insertAccident(accident)){
+                    System.out.println("사고 접수가 완료되었습니다. 사고 처리 담당자가 유선으로 안내를 드릴 예정 입니다. 감사합니다.");
+                } else {
+                    System.out.println("사고 접수 정보 저장을 실패했습니다. 시스템에 직접 등록하시기 바랍니다.");
+                }
+            } else {
+                System.out.println("이미 사고 접수가 완료되었습니다.");
+            }
+        } else {
+            System.out.println("해당 보험에 가입된 내역이 없습니다.");
+            return;
+        }
+    }
+
+    private void updateDateDriverInsurance(BufferedReader bufferedReader, String printInsurance) throws IOException {
+        String select;
+        if(printInsurance.contains("Driver")){
+            String[] insuranceInformations = new MaturityRenewalInsurance().retrieveDriverInsuranceInformations(userName);
+            printRenewExpirationDriverInsurance(insuranceInformations);
+            boolean expiredInsurance = new MaturityRenewalInsurance().retrieveDateDriverInsurance(userName);
+            if(expiredInsurance) {
+                System.out.println("보험 계약이 끝나 만기 갱신을 하셔야 합니다.");
+                while(true) {
+                    System.out.println("1. 갱신하기");
+                    System.out.println("2. 갱신하지않기");
+                    select = bufferedReader.readLine().trim();
+                    if(select.equals("1")){
+                        if(new MaturityRenewalInsurance().updateDateDriverInsurance(userName)) {
+                            System.out.println("보험 갱신이 완료되었습니다.");
+                        }else{
+                            System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
+                        }
+                        break;
+                    }else if(select.equals("2")){
+                        System.out.println("보험 갱신을 취소하였습니다.");
+                        break;
+                    }else {
+                        System.out.println("입력값이 올바르지 않습니다.");
+                    }
+                }
+            }else{
+                while(true) {
+                    System.out.println("1. 갱신하기");
+                    System.out.println("2. 갱신하지않기");
+                    select = bufferedReader.readLine().trim();
+                    if(select.equals("1")){
+                        if(new PolicyRenewalDate().updateDateDriverInsurance(userName)) {
+                            System.out.println("보험 갱신이 완료되었습니다.");
+                        }else{
+                            System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
+                        }
+                        break;
+                    }else if(select.equals("2")){
+                        System.out.println("보험 갱신을 취소하였습니다.");
+                        break;
+                    }else {
+                        System.out.println("입력값이 올바르지 않습니다.");
+                    }
+                }
+            }
+        }else{
+            System.out.println("해당 보험에 가입된 내역이 없습니다.");
+        }
+    }
+
+    private void updateDateCarInsurance(BufferedReader bufferedReader, String printInsurance) throws IOException {
+        String select;
+        if(printInsurance.contains("Car")){
+            String[] insuranceInformations = new MaturityRenewalInsurance().retrieveCarInsuranceInformations(userName);
+            printRenewExpirationCarInsurance(insuranceInformations);
+            boolean expiredInsurance = new MaturityRenewalInsurance().retrieveDateCarInsurance(userName);
+            if(expiredInsurance) {
+                System.out.println("보험 계약이 끝나 만기 갱신을 하셔야 합니다.");
+                while(true) {
+                    System.out.println("1. 갱신하기");
+                    System.out.println("2. 갱신하지않기");
+                    select = bufferedReader.readLine().trim();
+                    if(select.equals("1")){
+                        if(new MaturityRenewalInsurance().updateDateCarInsurance(userName)) {
+                            System.out.println("보험 갱신이 완료되었습니다.");
+                        }else{
+                            System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
+                        }
+                        break;
+                    }else if(select.equals("2")){
+                        System.out.println("보험 갱신을 취소하였습니다.");
+                        break;
+                    }else {
+                        System.out.println("입력값이 올바르지 않습니다.");
+                    }
+                }
+            }else{
+                while(true) {
+                    System.out.println("1. 갱신하기");
+                    System.out.println("2. 갱신하지않기");
+                    select = bufferedReader.readLine().trim();
+                    if(select.equals("1")){
+                        if(new PolicyRenewalDate().updateDateCarInsurance(userName)) {
+                            System.out.println("보험 갱신이 완료되었습니다.");
+                        }else{
+                            System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
+                        }
+                        break;
+                    }else if(select.equals("2")){
+                        System.out.println("보험 갱신을 취소하였습니다.");
+                        break;
+                    }else {
+                        System.out.println("입력값이 올바르지 않습니다.");
+                    }
+                }
+            }
+        }else{
+            System.out.println("해당 보험에 가입된 내역이 없습니다.");
+        }
+    }
+
+    private void retrieveInsurance(BufferedReader bufferedReader) throws IOException {
+        String select;
+        One:
+        while(true) {
+            printInsuranceProduct();
+            select = bufferedReader.readLine().trim();
+            switch (select) {
+                case "1":
+                    Customer customerOne = new CustomerDAOImpl().retrieveUserData(userName);
+                    String product = new Car(customerOne).printProduct();
+                    if (product == null) {System.out.println("해당 보험의 세부 내역을 불러오는데 실패하였습니다.");}
+                    else System.out.println(product);
+                    OneOut:
+                    while(true) {
+                        printregisterInsuranceProduct();
+                        select = bufferedReader.readLine().trim();
+                        switch (select) {
+                            case "1":
+                                Customer customer = new CustomerDAOImpl().retrieveUserData(userName);
+                                if(new ContractDAOImpl().insertCarInsuranceProduct(customer, "1", (int) (new Car(null).subscribe() * new Car(null).calculateRate(customer)))){
+                                    System.out.println("자동차 보험 가입 신청이 완료되었습니다. 검증 후 3일 뒤 가입 신청 결과를 확인할 수 있습니다.");
+                                }else{
+                                    System.out.println("이미 등록된 보험거나, 보험 가입이 거절 되었습니다.");
+                                }
+                                break OneOut;
+                            case "r": break OneOut;
+                            default : System.out.println("입력값이 올바르지 않습니다.");
+                        }
+                    }
+                    break;
+                case "2":
+                    Customer customerTwo = new CustomerDAOImpl().retrieveUserData(userName);
+                    String driverProduct = new Driver(customerTwo).printProduct();
+                    if(driverProduct == null) {System.out.println("해당 보험의 세부 내역을 불러오는데 실패하였습니다.");}
+                    else System.out.println(driverProduct);
+                    TwoOut:
+                    while(true) {
+                        printregisterInsuranceProduct();
+                        select = bufferedReader.readLine().trim();
+                        switch (select) {
+                            case "1":
+                                Customer customer = new CustomerDAOImpl().retrieveUserData(userName);
+                                if(new ContractDAOImpl().insertDriverInsuranceProduct(customer, "2", (int) (new Car(null).subscribe() * new Car(null).calculateRate(customer)))){
+                                    System.out.println("운전자 보험 가입 신청이 완료되었습니다. 검증 후 3일 뒤 가입 신청 결과를 확인할 수 있습니다.");
+                                }else{
+                                    System.out.println("이미 등록된 보험거나, 보험 가입이 거절 되었습니다.");
+                                }
+                                break TwoOut;
+                            case "r":
+                                break TwoOut;
+                            default : System.out.println("입력값이 올바르지 않습니다.");
+                        }
+                    }
+                    break;
+                case "r": break One;
+                default : System.out.println("입력값이 올바르지 않습니다.");
+            }
+        }
+    }
+
+    private void cacellationsInuranceDriver(BufferedReader bufferedReader, String printInsurance) throws IOException {
+        String select;
+        if(printInsurance.contains("Driver")){
+            while(true) {
+                System.out.print("발생하는 위약금 : ");
+                long penaltyFee = new InsuranceDAOImpl().retrievePenaltyFeeInsuranceDriver(userName);
+                System.out.println(penaltyFee + "원");
+                if(penaltyFee == 0) {
+                    System.out.println("해당 보험은 청약철회가 가능합니다.");
+                    // 청약 철회 다시 작성
+                    System.out.println("1. 청약 철회 한다.");
+                    System.out.println("2. 청약 철회 하지않는다.");
+                }else {
+                    System.out.println("1. 해지한다.");
+                    System.out.println("2. 해지하지않는다.");
+                }
+                select = bufferedReader.readLine().trim();
+                if(select.equals("1")){
+                    if(new ContractDAOImpl().deleteDriverInsurance(userName)) {
+                        System.out.println("보험이 해지 되었습니다.");
+                    }else{
+                        System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
+                    }
+                    break;
+                }else if(select.equals("2")){
+                    System.out.println("보험 해지를 취소하였습니다.");
+                    break;
+                }else {
+                    System.out.println("입력값이 올바르지 않습니다.");
+                }
+            }
+        }else{
+            System.out.println("해당 보험에 가입된 내역이 없습니다.");
+        }
+    }
+
+    private void cancellationInsuranceCar(BufferedReader bufferedReader, String printInsurance) throws IOException {
+        String select;
+        if(printInsurance.contains("Car")){
+            while(true) {
+                System.out.print("발생하는 위약금 : ");
+                long penaltyFee = new CancellationInsurance().retrievePenaltyFeeInsuranceCar(userName);
+                System.out.println(penaltyFee + "원");
+                if(penaltyFee == 0) {
+                    System.out.println("해당 보험은 청약철회가 가능합니다.");
+                    // cjdd
+                    System.out.println("1. 청약 철회 한다.");
+                    System.out.println("2. 청약 철회 하지않는다.");
+                }else {
+                    System.out.println("1. 해지한다.");
+                    System.out.println("2. 해지하지않는다.");
+                }
+                select = bufferedReader.readLine().trim();
+                if(select.equals("1")){
+                    if(new CancellationInsurance().deleteCarInsurance(userName)) {
+                        System.out.println("보험이 해지 되었습니다.");
+                    }else{
+                        System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
+                    }
+                    break;
+                }else if(select.equals("2")){
+                    System.out.println("보험 해지를 취소하였습니다.");
+                    break;
+                }else {
+                    System.out.println("입력값이 올바르지 않습니다.");
+                }
+            }
+        }else{
+            System.out.println("해당 보험에 가입된 내역이 없습니다.");
         }
     }
 
@@ -522,7 +568,7 @@ public class CustomerLoginView {
     }
 
     private String printRegisterInsurance() {
-        String allInsurance = new CustomerController().getAllInsuranceProduct(userName);
+        String allInsurance = new InquiryInsurance().retriveAllInsuranceProduct(userName);
         if(!allInsurance.equals("")) {
             System.out.println("가입된 보험 : " + allInsurance);
         } else {

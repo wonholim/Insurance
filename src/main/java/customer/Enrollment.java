@@ -1,4 +1,4 @@
-package dao;
+package customer;
 
 import customer.Customer;
 

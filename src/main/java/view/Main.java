@@ -1,10 +1,8 @@
 package view;
 
-import controller.EmployeeController;
-import controller.FSSController;
 import customer.Customer;
-import dao.CustomerDAO;
-import fss.FSS;
+import dao.CustomerDAOImpl;
+import dao.EmployeeDAOImpl;
 import team.Team;
 
 import java.io.*;
@@ -54,73 +52,16 @@ public class Main {
                             }
                         }
                         break;
-                    case "3":
-                        Three:
-                        while(true) {
-                            printFSSLoginMenu();
-                            select = bufferedReader.readLine().trim();
-                            switch (select) {
-                                case "1":
-                                    String FSSName = printFSSLogin(bufferedReader);
-                                    if(FSSName != null) {
-                                        FSSLoginView fssLoginView = new FSSLoginView(FSSName);
-                                        fssLoginView.fssSelect(bufferedReader);
-                                    }
-                                    break;
-                                case "2": registerFSS(bufferedReader); break;
-                                case "r": break Three;
-                                default : System.out.println("입력값이 올바르지 않습니다.");
-                            }
-                        }
-                        break;
                     case "x": exitProgram(); return;
                     default : System.out.println("입력값이 올바르지 않습니다.");
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            // stacktrace로 안찍힘
+            System.out.println(e.getCause());
         }
     }
 
-    private static String printFSSLogin(BufferedReader br) {
-        System.out.println("***************** FSS LOGIN MENU *****************");
-        String[] fss = new String[2];
-        try {
-            System.out.print("ID : ");
-            fss[0] = br.readLine().trim();
-            System.out.print("Password : ");
-            fss[1] = br.readLine().trim();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        FSSController fssController = new FSSController();
-        if (fssController.login(fss)) {
-            System.out.println(fss[0] + "님 환영합니다.");
-            return fss[0];
-        } else {
-            System.out.println("아이디 또는 비밀번호가 올바르지 않습니다.");
-        }
-        return null;
-    }
-    private static void registerFSS(BufferedReader br) {
-        FSS fss = new FSS();
-        try {
-            System.out.print("아이디 : ");
-            String ID = br.readLine().trim();
-            fss.setID(ID);
-            System.out.print("비밀번호 : ");
-            String password = br.readLine().trim();
-            fss.setPassword(password);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        FSSController fssController = new FSSController();
-        if (fssController.register(fss)) {
-            System.out.println("등록이 완료되었습니다.");
-        } else {
-            System.out.println("이미 등록되었습니다.");
-        }
-    }
     private static String printEmployeeLogin(BufferedReader br) {
         System.out.println("***************** EMPLOYEE LOGIN MENU *****************");
         String[] employee = new String[2];
@@ -133,8 +74,7 @@ public class Main {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        EmployeeController employeeController = new EmployeeController();
-        if (employeeController.login(employee)) {
+        if (new EmployeeDAOImpl().retrieveEmployee(employee)) {
             System.out.println(employee[0] + "님 환영합니다.");
             return employee[0];
         } else {
@@ -172,8 +112,7 @@ public class Main {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        EmployeeController employeeController = new EmployeeController();
-        if (employeeController.register(team)) {
+        if (new EmployeeDAOImpl().insertEmployee(team)) {
             System.out.println("등록이 완료되었습니다.");
         } else {
             System.out.println("이미 등록되었습니다.");
@@ -218,7 +157,7 @@ public class Main {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        if (new CustomerDAO().register(customer)) {
+        if (new CustomerDAOImpl().insertUser(customer)) {
             System.out.println("회원가입이 완료되었습니다.");
         } else {
             System.out.println("이미 등록된 회원입니다.");
@@ -235,7 +174,8 @@ public class Main {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        if (new CustomerDAO().login(user)) {
+        // DB 중심이 아니게 CRUD 만
+        if (new CustomerDAOImpl().retrieveUser(user)) {
             System.out.println(user[0] + "님 환영합니다.");
             return user[0];
         } else {
@@ -247,19 +187,12 @@ public class Main {
         System.out.println("***************** MENU *****************");
         System.out.println("1. 고객");
         System.out.println("2. 직원");
-        System.out.println("3. 금감원");
         System.out.println("x. Exit");
     }
     private static void printCustomerLoginMenu() {
         System.out.println("***************** CUSTOMER LOGIN MENU *****************");
         System.out.println("1. 로그인");
         System.out.println("2. 가입하기");
-        System.out.println("r. 뒤로가기");
-    }
-    private static void printFSSLoginMenu() {
-        System.out.println("***************** FSS MENU *****************");
-        System.out.println("1. 로그인");
-        System.out.println("2. 금감원 등록하기");
         System.out.println("r. 뒤로가기");
     }
     private static void printEmployeeLoginMenu() {
