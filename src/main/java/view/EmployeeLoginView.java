@@ -3,6 +3,7 @@ package view;
 import dao.AccidentDAOImpl;
 import dao.EmployeeDAOImpl;
 import dao.InjuryDAOImpl;
+import exception.DatabaseException;
 import insurance.*;
 import team.*;
 
@@ -35,6 +36,9 @@ public class EmployeeLoginView {
                             switch (select) {
                                 case "1" :
                                     List<Car> carCustomers = new UnderWriting().retrieveCarUnderWritingList();
+                                    // E1 시스템이 보험 가입 신청 목록을 불러오지 못한 경우
+                                    // carCustomers = null;
+                                    // if(carCustomers == null) {System.out.println("보험 가입 신청 목록을 불러올 수 없습니다. 잠시 후 다시 시도해주세요."); break;}
                                     if(carCustomers.size() == 0) {System.out.println("검증할 대상이 없습니다."); break;}
                                     int carIndex = -1;
                                     while(true) {
@@ -42,17 +46,20 @@ public class EmployeeLoginView {
                                         if(carIndex != -1) break;
                                     }
                                     if(!new UnderWriting().deleteCarUnderWriting(carCustomers.get(carIndex))){
-                                        System.out.println("DB 삭제에 오류가 발생했습니다.");
+                                        System.out.println("검증 대상 삭제에 오류가 발생했습니다.");
                                         break;
                                     }
                                     if(!new UnderWriting().updateCarUnderWriting(carCustomers.get(carIndex))){
-                                        System.out.println("DB 업데이트에 오류가 발생했습니다.");
+                                        System.out.println("해당 가입 신청 정보를 저장하지 못하였습니다.");
                                         break;
                                     }
                                     System.out.println("검증을 완료 했습니다.");
                                     break;
                                 case "2" :
                                     List<Driver> driverCustomers = new UnderWriting().retrieveDriverUnderWritingList();
+                                    // E1 시스템이 보험 가입 신청 목록을 불러오지 못한 경우
+                                    // driverCustomers = null;
+                                    // if(driverCustomers == null) {System.out.println("보험 가입 신청 목록을 불러올 수 없습니다. 잠시 후 다시 시도해주세요."); break;}
                                     if(driverCustomers.size() == 0) {System.out.println("검증할 대상이 없습니다."); break;}
                                     int driverIndex = -1;
                                     while(true) {
@@ -60,11 +67,11 @@ public class EmployeeLoginView {
                                         if(driverIndex != -1) break;
                                     }
                                     if(!new UnderWriting().deleteDriverUnderWriting(driverCustomers.get(driverIndex))){
-                                        System.out.println("DB 삭제에 오류가 발생했습니다.");
+                                        System.out.println("검증 대상 삭제에 오류가 발생했습니다.");
                                         break;
                                     }
                                     if(!new UnderWriting().updateDriverUnderWriting(driverCustomers.get(driverIndex))){
-                                        System.out.println("DB 업데이트에 오류가 발생했습니다.");
+                                        System.out.println("해당 가입 신청 정보를 저장하지 못하였습니다.");
                                         break;
                                     }
                                     System.out.println("검증을 완료 했습니다.");
@@ -284,8 +291,8 @@ public class EmployeeLoginView {
                         System.out.println("입력값이 올바르지 않습니다.");
                 }
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException| DatabaseException e) {
+            System.out.println(e.getMessage());
         }
     }
 

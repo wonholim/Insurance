@@ -2,11 +2,12 @@ package util;
 
 
 import connector.Database;
+import exception.DatabaseException;
 
 import java.util.Random;
 
 public class GenerateEmployee extends Database {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws DatabaseException {
         Random random = new Random();
         GenerateEmployee generator = new GenerateEmployee();
         for (int i = 0; i < 100; i++) {

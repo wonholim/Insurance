@@ -2,42 +2,41 @@ package dao;
 
 import connector.Database;
 import customer.Customer;
+import exception.DatabaseException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class ContractDAOImpl extends Database implements ContractDAO{
-    public ContractDAOImpl() {super.initConnection();}
+    public ContractDAOImpl() throws DatabaseException {super.initConnection();}
     @Override
-    public boolean insertCarInsuranceProduct(Customer customer, String productID, int price) {
+    public boolean insertCarInsuranceProduct(Customer customer, String productID, int price) throws DatabaseException {
         String query = "SELECT CustomerID FROM TmpCarInsuranceProduct WHERE CustomerID = ? ";
-        if(super.isRegister(query, customer.getCustomerID())) return false;
+        if(super.retrieveCustomer(query, customer.getCustomerID())) return false;
         query = "SELECT CustomerID FROM CarInsuranceProduct WHERE CustomerID = ? ";
-        if(super.isRegister(query, customer.getCustomerID())) return false;
+        if(super.retrieveCustomer(query, customer.getCustomerID())) return false;
         query = "INSERT INTO TmpCarInsuranceProduct (ProductID, CustomerID, CustomerName, PhoneNum, DriverLicense, CarModel, CarNum, Price) VALUES ('"
                 + productID + "', '" + customer.getCustomerID() + "', '" + customer.getName() + "', '"
                 + customer.getPhoneNum() + "', '" + customer.getDriverLicense() + "', '" + customer.getCarModel() + "', '"
                 + customer.getCarNum() + "', " + price + ")";
-        if(super.create(query)) return true;
-        return false;
+        return super.create(query);
     }
 
     @Override
-    public boolean insertDriverInsuranceProduct(Customer customer, String productID, int price) {
+    public boolean insertDriverInsuranceProduct(Customer customer, String productID, int price) throws DatabaseException {
         String query = "SELECT CustomerID FROM TmpDriverInsuranceProduct WHERE CustomerID = ? ";
-        if(super.isRegister(query, customer.getCustomerID())) return false;
+        if(super.retrieveCustomer(query, customer.getCustomerID())) return false;
         query = "SELECT CustomerID FROM DriverInsuranceProduct WHERE CustomerID = ? ";
-        if(super.isRegister(query, customer.getCustomerID())) return false;
+        if(super.retrieveCustomer(query, customer.getCustomerID())) return false;
         query = "INSERT INTO TmpDriverInsuranceProduct (ProductID, CustomerID, CustomerName, PhoneNum, DriverLicense, Price) VALUES ('"
                 + productID + "', '" + customer.getCustomerID() + "', '" + customer.getName() + "', '"
                 + customer.getPhoneNum() + "', '" + customer.getDriverLicense() + "', " + price + ")";
-        if(super.create(query)) return true;
-        return false;
+        return super.create(query);
     }
 
     @Override
-    public boolean updateDateCarInsurance(String userName) {
+    public boolean updateDateCarInsurance(String userName) throws DatabaseException {
         String query = "SELECT coverageExpirationDate FROM CarInsuranceProduct WHERE CustomerID = '" + userName + "';";
         String coverageExpirationDate = "";
         try (ResultSet rs = super.retrieve(query)) {
@@ -45,7 +44,7 @@ public class ContractDAOImpl extends Database implements ContractDAO{
                 coverageExpirationDate = rs.getString("coverageExpirationDate");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("DB 조회에 오류가 발생했습니다.");
         }
         String lastUpDate = LocalDate.parse(coverageExpirationDate).plusYears(10).toString();
         query = "UPDATE CarInsuranceProduct SET coverageExpirationDate = '" + lastUpDate + "' WHERE CustomerID = '" + userName + "';";
@@ -53,7 +52,7 @@ public class ContractDAOImpl extends Database implements ContractDAO{
     }
 
     @Override
-    public boolean updateDateDriverInsurance(String userName) {
+    public boolean updateDateDriverInsurance(String userName) throws DatabaseException {
         String query = "SELECT coverageExpirationDate FROM DriverInsuranceProduct WHERE CustomerID = '" + userName + "';";
         String coverageExpirationDate = "";
         try (ResultSet rs = super.retrieve(query)) {
@@ -61,7 +60,7 @@ public class ContractDAOImpl extends Database implements ContractDAO{
                 coverageExpirationDate = rs.getString("coverageExpirationDate");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("DB 조회에 오류가 발생했습니다.");
         }
         String lastUpDate = LocalDate.parse(coverageExpirationDate).plusYears(20).toString();
         query = "UPDATE DriverInsuranceProduct SET coverageExpirationDate = '" + lastUpDate + "' WHERE CustomerID = '" + userName + "';";
@@ -69,7 +68,7 @@ public class ContractDAOImpl extends Database implements ContractDAO{
     }
 
     @Override
-    public String[] retrieveCarInsuranceInformations(String userName) {
+    public String[] retrieveCarInsuranceInformations(String userName) throws DatabaseException {
         String query = "SELECT Price ,coverageExpirationDate FROM CarInsuranceProduct WHERE CustomerID = '" + userName + "';";
         String[] informations = new String[2];
         try (ResultSet rs = super.retrieve(query)) {
@@ -78,13 +77,13 @@ public class ContractDAOImpl extends Database implements ContractDAO{
                 informations[1] = rs.getString("coverageExpirationDate");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("DB 조회에 오류가 발생했습니다.");
         }
         return informations;
     }
 
     @Override
-    public String[] retrieveDriverInsuranceInformations(String userName) {
+    public String[] retrieveDriverInsuranceInformations(String userName) throws DatabaseException {
         String query = "SELECT Price ,coverageExpirationDate FROM DriverInsuranceProduct WHERE CustomerID = '" + userName + "';";
         String[] informations = new String[2];
         try (ResultSet rs = super.retrieve(query)) {
@@ -93,21 +92,19 @@ public class ContractDAOImpl extends Database implements ContractDAO{
                 informations[1] = rs.getString("coverageExpirationDate");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("DB 조회에 오류가 발생했습니다.");
         }
         return informations;
     }
     @Override
-    public boolean deleteCarInsurance(String userName) {
+    public boolean deleteCarInsurance(String userName) throws DatabaseException {
         String query = "DELETE FROM carInsuranceProduct WHERE CustomerID = '" + userName + "';";
-        if(super.delete(query)) return true;
-        return false;
+        return super.delete(query);
     }
 
     @Override
-    public boolean deleteDriverInsurance(String userName) {
+    public boolean deleteDriverInsurance(String userName) throws DatabaseException {
         String query = "DELETE FROM DriverInsuranceProduct WHERE CustomerID = '" + userName + "';";
-        if(super.delete(query)) return true;
-        return false;
+        return super.delete(query);
     }
 }

@@ -2,6 +2,7 @@ package dao;
 
 import connector.Database;
 import customer.Customer;
+import exception.DatabaseException;
 import insurance.*;
 import team.Team;
 
@@ -13,52 +14,50 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeDAOImpl extends Database implements EmployeeDAO {
-    public EmployeeDAOImpl() {
+    public EmployeeDAOImpl() throws DatabaseException {
         super.initConnection();
     }
 
     @Override
-    public boolean insertEmployee(Team employee) {
+    public boolean insertEmployee(Team employee) throws DatabaseException {
         String query = "INSERT INTO Employee values ('"
                 + employee.getName() + "', " + employee.getAge() + ", '" + employee.getRegistraionNumber() + "', '"
                 + employee.getPhoneNum() + "', '" + employee.getID() + "', '" + employee.getPassword() + "', "
                 + employee.getEmployeeRank() + ", " + employee.getTeamNumber() + ");";
-        if(super.create(query)) return true;
-        return false;
+        return super.create(query);
     }
     @Override
-    public boolean retrieveEmployee(String[] employee) {
+    public boolean retrieveEmployee(String[] employee) throws DatabaseException {
         String query = "SELECT EmployeeID, EmployeePassword FROM Employee WHERE EmployeeID = '" + employee[0] + "' AND EmployeePassword = '" + employee[1] + "';";
         try (ResultSet rs = super.retrieve(query)) {
             if(rs.next()) {
                 return true;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("DB 조회에 오류가 발생했습니다.");
         }
         return false;
     }
     @Override
-    public boolean insertInsuranceProduct(Customer customer, String productID, int price) {
+    public boolean insertInsuranceProduct(Customer customer, String productID, int price) throws DatabaseException {
         String query = "SELECT CustomerID FROM TmpCarInsuranceProduct WHERE CustomerID = ? ";
-        if(super.isRegister(query, customer.getCustomerID())) return false;
+        if(super.retrieveCustomer(query, customer.getCustomerID())) return false;
         query = "SELECT CustomerID FROM CarInsuranceProduct WHERE CustomerID = ? ";
-        if(super.isRegister(query, customer.getCustomerID())) return false;
+        if(super.retrieveCustomer(query, customer.getCustomerID())) return false;
         query = "INSERT INTO TmpCarInsuranceProduct (ProductID, CustomerID, CustomerName, PhoneNum, DriverLicense, CarModel, CarNum, Price) VALUES ('"
                 + productID + "', '" + customer.getCustomerID() + "', '" + customer.getName() + "', '"
                 + customer.getPhoneNum() + "', '" + customer.getDriverLicense() + "', '" + customer.getCarModel() + "', '"
                 + customer.getCarNum() + "', " + price + ")";
-        if(super.create(query)) return true;
-        return false;
+        return super.create(query);
     }
     @Override
     public boolean retrieveEmployeeUnderWriting(String employeeName) {
         String query = "SELECT EmployeeID, EmployeePassword FROM Employee WHERE EmployeeID = ? AND TeamNum = ?";
-        if(super.checkTeam(query, new String[]{employeeName, "3"})) return true;
+        if(super.retrieveTeam(query, new String[]{employeeName, "3"})) return true;
         return false;
     }
     @Override
-    public List<Car> retrieveCarUnderWritingList() {
+    public List<Car> retrieveCarUnderWritingList() throws DatabaseException {
             String query = "SELECT * FROM TmpCarInsuranceProduct;";
             try (ResultSet rs = super.retrieve(query)) {
                 List<Car> carList = new ArrayList<>();
@@ -76,18 +75,16 @@ public class EmployeeDAOImpl extends Database implements EmployeeDAO {
                 }
                 return carList;
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new DatabaseException("DB 조회에 오류가 발생했습니다.");
             }
-            return null;
     }
     @Override
-    public boolean deleteCarUnderWriting(Car car) {
+    public boolean deleteCarUnderWriting(Car car) throws DatabaseException {
         String query = "DELETE FROM TmpCarInsuranceProduct WHERE CustomerID = '" + car.getCustomerID() + "';";
-        if(super.delete(query)) return true;
-        return false;
+        return super.delete(query);
     }
     @Override
-    public boolean updateCarUnderWriting(Car car) {
+    public boolean updateCarUnderWriting(Car car) throws DatabaseException {
         String query = "SELECT EmployeeID FROM Employee WHERE TeamNum = 2 ORDER BY RAND() LIMIT 2";
         List<String> teamID = new ArrayList<>();
         try (ResultSet rs = super.retrieve(query)) {
@@ -104,11 +101,10 @@ public class EmployeeDAOImpl extends Database implements EmployeeDAO {
                 + car.getProductID() + "', '" + car.getCustomerID() + "', '" + car.getCustomerName() + "', '"
                 + car.getPhoneNum() + "', '" + car.getDriverLicense() + "', '" + car.getCarModel() + "', '" + car.getCarNum() + "', " + car.getPrice() + ", '" + teamID.get(0)  + "', '" + teamID.get(1) +"', '"
                 + currentDate.format(formatter) + "', '" +  dateIn10Years.format(formatter) + "')";
-        if(super.create(query)) return true;
-        return false;
+        return super.create(query);
     }
     @Override
-    public List<Driver> retrieveDriverUnderWritingList() {
+    public List<Driver> retrieveDriverUnderWritingList() throws DatabaseException {
         String query = "SELECT * FROM TmpDriverInsuranceProduct;";
         try (ResultSet rs = super.retrieve(query)) {
             List<Driver> driverList = new ArrayList<>();
@@ -124,18 +120,16 @@ public class EmployeeDAOImpl extends Database implements EmployeeDAO {
             }
             return driverList;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("DB 조회에 오류가 발생했습니다.");
         }
-        return null;
     }
     @Override
-    public boolean deleteDriverUnderWriting(Driver driver) {
+    public boolean deleteDriverUnderWriting(Driver driver) throws DatabaseException {
         String query = "DELETE FROM TmpDriverInsuranceProduct WHERE CustomerID = '" + driver.getCustomerID() + "';";
-        if(super.delete(query)) return true;
-        return false;
+        return super.delete(query);
     }
     @Override
-    public boolean updateDriverUnderWriting(Driver driver) {
+    public boolean updateDriverUnderWriting(Driver driver) throws DatabaseException {
         String query = "SELECT EmployeeID FROM Employee WHERE TeamNum = 2 ORDER BY RAND() LIMIT 2";
         List<String> teamID = new ArrayList<>();
         try (ResultSet rs = super.retrieve(query)) {
@@ -152,27 +146,26 @@ public class EmployeeDAOImpl extends Database implements EmployeeDAO {
                 + driver.getProductID() + "', '" + driver.getCustomerID() + "', '" + driver.getCustomerName() + "', '"
                 + driver.getPhoneNum() + "', '" + driver.getDriverLicense() + "', " + driver.getPrice() + ", '" + teamID.get(0)  + "', '" + teamID.get(1) +"', '"
                 + currentDate.format(formatter) + "', '" +  dateIn20Years.format(formatter) + "')";
-        if(super.create(query)) return true;
-        return false;
+        return super.create(query);
     }
     @Override
     public boolean retrieveAccidentTeam(String employeeName) {
         String query = "SELECT EmployeeID, EmployeePassword FROM Employee WHERE EmployeeID = ? AND TeamNum = ?";
-        if(super.checkTeam(query, new String[]{employeeName, "1"})) return true;
+        if(super.retrieveTeam(query, new String[]{employeeName, "1"})) return true;
         return false;
     }
 
     @Override
     public boolean retrieveLossEvaluationTeam(String employeeName) {
         String query = "SELECT EmployeeID FROM Employee WHERE EmployeeID = ? AND TeamNum = ?";
-        if(super.checkTeam(query, new String[]{employeeName, "4"})) return true;
+        if(super.retrieveTeam(query, new String[]{employeeName, "4"})) return true;
         return false;
     }
 
     @Override
     public boolean retrieveClaimProcessingTeam(String employeeName) {
         String query = "SELECT EmployeeID FROM Employee WHERE EmployeeID = ? AND TeamNum = ?";
-        return super.checkTeam(query, new String[]{employeeName, "2"});
+        return super.retrieveTeam(query, new String[]{employeeName, "2"});
     }
 
 

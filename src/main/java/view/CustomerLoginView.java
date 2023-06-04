@@ -7,6 +7,7 @@ import customer.Customer;
 import dao.ContractDAOImpl;
 import dao.CustomerDAOImpl;
 import dao.InsuranceDAOImpl;
+import exception.DatabaseException;
 import insurance.*;
 
 import java.io.BufferedReader;
@@ -100,7 +101,7 @@ public class CustomerLoginView {
                     case "6":
                         printInsurance = printRegisterInsurance();
                         if(printInsurance == null) {
-                            System.out.println("가입된 보험 내역이 존재하지 않습니다.");
+                            System.out.println("가입된 보험 내역이 존재하지 않습니다. 보험금 청구는 보험이 가입된 상태에서 가능합니다.");
                             break;
                         }
                         SixOut:
@@ -124,18 +125,18 @@ public class CustomerLoginView {
                     default: System.out.println("입력값이 올바르지 않습니다.");
                 }
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | DatabaseException e) {
+            System.out.println(e.getMessage());
         }
     }
 
-    private void driverCompensation(BufferedReader bufferedReader) throws IOException {
+    private void driverCompensation(BufferedReader bufferedReader) throws IOException, DatabaseException {
         if(!new InsuranceDAOImpl().retrieveInjuryInsurance(userName)) {
             if(new InsuranceDAOImpl().retrieveInjury(userName)){
                 InjuryReport injuryReports = printRequestDriverInsurancePayout(bufferedReader);
                 injuryReports.setCustomerID(userName);
                 if(new InsuranceDAOImpl().retrieveInjuryCompensation(injuryReports)) {
-                    System.out.println("상해 보험금 신청이 완료되었습니다.");
+                    System.out.println("상해 보험금 신청이 완료되었습니다. 심사 후 보험금이 지급 될 예정입니다. 감사합니다.");
                 } else {
                     System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
                 }
@@ -147,13 +148,13 @@ public class CustomerLoginView {
         }
     }
 
-    private void carCompensation(BufferedReader bufferedReader) throws IOException {
+    private void carCompensation(BufferedReader bufferedReader) throws IOException, DatabaseException {
         if(!new InsuranceDAOImpl().retrieveAccidentInsurance(userName)) {
             if(new InsuranceDAOImpl().retrieveAccident(userName)){
                 AccidentReport accidentReport = printRequestCarInsurancePayout(bufferedReader);
                 accidentReport.setCustomerID(userName);
                 if(new InsuranceDAOImpl().retrieveAccidentCompensation(accidentReport)) {
-                    System.out.println("자동차 보험금 신청이 완료되었습니다.");
+                    System.out.println("자동차 보험금 신청이 완료되었습니다. 심사 후 보험금이 지급 될 예정입니다. 감사합니다.");
                 } else {
                     System.out.println("시스템에 일시적인 장애가 발생하였습니다. 잠시 후 다시 시도해주세요.");
                 }
@@ -165,7 +166,7 @@ public class CustomerLoginView {
         }
     }
 
-    private void injuryReport(BufferedReader bufferedReader, String printInsurance) throws IOException {
+    private void injuryReport(BufferedReader bufferedReader, String printInsurance) throws IOException, DatabaseException {
         if(printInsurance.contains("Driver")) {
             if(!new InsuranceDAOImpl().retrieveInjuryInsurance(userName)){
                 Injury injury = printInjuryReportMenu(bufferedReader);
@@ -183,7 +184,7 @@ public class CustomerLoginView {
         }
     }
 
-    private void accidentReport(BufferedReader bufferedReader, String printInsurance) throws IOException {
+    private void accidentReport(BufferedReader bufferedReader, String printInsurance) throws IOException, DatabaseException {
         if(printInsurance.contains("Car")) {
             if(!new InsuranceDAOImpl().retrieveAccidentInsurance(userName)){
                 Accident accident = printCarAccidentReportMenu(bufferedReader);
@@ -201,7 +202,7 @@ public class CustomerLoginView {
         }
     }
 
-    private void updateDateDriverInsurance(BufferedReader bufferedReader, String printInsurance) throws IOException {
+    private void updateDateDriverInsurance(BufferedReader bufferedReader, String printInsurance) throws IOException, DatabaseException {
         String select;
         if(printInsurance.contains("Driver")){
             String[] insuranceInformations = new MaturityRenewalInsurance().retrieveDriverInsuranceInformations(userName);
@@ -252,7 +253,7 @@ public class CustomerLoginView {
         }
     }
 
-    private void updateDateCarInsurance(BufferedReader bufferedReader, String printInsurance) throws IOException {
+    private void updateDateCarInsurance(BufferedReader bufferedReader, String printInsurance) throws IOException, DatabaseException {
         String select;
         if(printInsurance.contains("Car")){
             String[] insuranceInformations = new MaturityRenewalInsurance().retrieveCarInsuranceInformations(userName);
@@ -303,7 +304,7 @@ public class CustomerLoginView {
         }
     }
 
-    private void retrieveInsurance(BufferedReader bufferedReader) throws IOException {
+    private void retrieveInsurance(BufferedReader bufferedReader) throws IOException, DatabaseException {
         String select;
         One:
         while(true) {
@@ -313,7 +314,9 @@ public class CustomerLoginView {
                 case "1":
                     Customer customerOne = new CustomerDAOImpl().retrieveUserData(userName);
                     String product = new Car(customerOne).printProduct();
-                    if (product == null) {System.out.println("해당 보험의 세부 내역을 불러오는데 실패하였습니다.");}
+                    // Exception E2 시스템이 고객이 선택한 보험의 세부 내역을 불러오지 못하는 경우
+                    // product = null;
+                    if (product == null) {System.out.println("해당 보험의 세부 내역을 불러오는데 실패하였습니다. 잠시 후 다시 시도하세요.");}
                     else System.out.println(product);
                     OneOut:
                     while(true) {
@@ -325,7 +328,7 @@ public class CustomerLoginView {
                                 if(new ContractDAOImpl().insertCarInsuranceProduct(customer, "1", (int) (new Car(null).subscribe() * new Car(null).calculateRate(customer)))){
                                     System.out.println("자동차 보험 가입 신청이 완료되었습니다. 검증 후 3일 뒤 가입 신청 결과를 확인할 수 있습니다.");
                                 }else{
-                                    System.out.println("이미 등록된 보험거나, 보험 가입이 거절 되었습니다.");
+                                    System.out.println("이미 등록된 보험이거나, 보험 가입이 거절 되었습니다.");
                                 }
                                 break OneOut;
                             case "r": break OneOut;
@@ -336,7 +339,9 @@ public class CustomerLoginView {
                 case "2":
                     Customer customerTwo = new CustomerDAOImpl().retrieveUserData(userName);
                     String driverProduct = new Driver(customerTwo).printProduct();
-                    if(driverProduct == null) {System.out.println("해당 보험의 세부 내역을 불러오는데 실패하였습니다.");}
+                    // Exception E2 시스템이 고객이 선택한 보험의 세부 내역을 불러오지 못하는 경우
+                    // driverProduct = null;
+                    if(driverProduct == null) {System.out.println("해당 보험의 세부 내역을 불러오는데 실패하였습니다. 잠시 후 다시 시도하세요.");}
                     else System.out.println(driverProduct);
                     TwoOut:
                     while(true) {
@@ -363,7 +368,7 @@ public class CustomerLoginView {
         }
     }
 
-    private void cacellationsInuranceDriver(BufferedReader bufferedReader, String printInsurance) throws IOException {
+    private void cacellationsInuranceDriver(BufferedReader bufferedReader, String printInsurance) throws IOException, DatabaseException {
         String select;
         if(printInsurance.contains("Driver")){
             while(true) {
@@ -399,7 +404,7 @@ public class CustomerLoginView {
         }
     }
 
-    private void cancellationInsuranceCar(BufferedReader bufferedReader, String printInsurance) throws IOException {
+    private void cancellationInsuranceCar(BufferedReader bufferedReader, String printInsurance) throws IOException, DatabaseException {
         String select;
         if(printInsurance.contains("Car")){
             while(true) {
@@ -567,12 +572,11 @@ public class CustomerLoginView {
         System.out.println("r. 뒤로가기");
     }
 
-    private String printRegisterInsurance() {
+    private String printRegisterInsurance() throws DatabaseException {
         String allInsurance = new InquiryInsurance().retriveAllInsuranceProduct(userName);
         if(!allInsurance.equals("")) {
             System.out.println("가입된 보험 : " + allInsurance);
         } else {
-            System.out.println("가입된 보험이 존재하지 않습니다.");
             return null;
         }
         return allInsurance;

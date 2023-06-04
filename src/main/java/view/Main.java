@@ -3,6 +3,7 @@ package view;
 import customer.Customer;
 import dao.CustomerDAOImpl;
 import dao.EmployeeDAOImpl;
+import exception.DatabaseException;
 import team.Team;
 
 import java.io.*;
@@ -56,13 +57,12 @@ public class Main {
                     default : System.out.println("입력값이 올바르지 않습니다.");
                 }
             }
-        } catch (IOException e) {
-            // stacktrace로 안찍힘
-            System.out.println(e.getCause());
+        } catch (IOException | DatabaseException e) {
+            System.out.println(e.getMessage());
         }
     }
 
-    private static String printEmployeeLogin(BufferedReader br) {
+    private static String printEmployeeLogin(BufferedReader br) throws DatabaseException {
         System.out.println("***************** EMPLOYEE LOGIN MENU *****************");
         String[] employee = new String[2];
         try {
@@ -82,14 +82,21 @@ public class Main {
         }
         return null;
     }
-    private static void registerEmployee(BufferedReader br) {
+    private static void registerEmployee(BufferedReader br) throws DatabaseException {
         Team team = new Team();
         try {
             System.out.print("이름 : ");
             String name = br.readLine().trim();
             team.setName(name);
-            System.out.print("나이 : ");
-            int age = Integer.parseInt(br.readLine().trim());
+            Integer age = null;
+            while(age == null) {
+                try {
+                    System.out.print("나이 : ");
+                    age = Integer.parseInt(br.readLine().trim());
+                } catch (NumberFormatException e){
+                    System.out.println("숫자만 입력해 주세요.");
+                }
+            }
             team.setAge(age);
             System.out.print("주민등록번호 : ");
             String registraionNumber = br.readLine().trim();
@@ -103,11 +110,25 @@ public class Main {
             System.out.print("비밀번호 : ");
             String password = br.readLine().trim();
             team.setPassword(password);
-            System.out.print("직급 (1. 사원, 2. 대리, 3. 과장, 4. 부장, 5. 사장) : ");
-            int rank = Integer.parseInt(br.readLine().trim());
+            Integer rank = null;
+            while(rank == null) {
+                try {
+                    System.out.print("직급 (1. 사원, 2. 대리, 3. 과장, 4. 부장, 5. 사장) : ");
+                    rank = Integer.parseInt(br.readLine().trim());
+                } catch (NumberFormatException e) {
+                    System.out.println("숫자만 입력하세요.");
+                }
+            }
             team.setEmployeeRank(rank);
-            System.out.print("부서 (1. 사고 처리팀, 2. 보상 처리팀, 3. 언더라이팅팀, 4. 손해 사정팀, 5. 상품 개발팀) :");
-            int teamNum = Integer.parseInt(br.readLine().trim());
+            Integer teamNum = null;
+            while(teamNum == null) {
+                try {
+                    System.out.print("부서 (1. 사고 처리팀, 2. 보상 처리팀, 3. 언더라이팅팀, 4. 손해 사정팀, 5. 상품 개발팀) :");
+                    teamNum = Integer.parseInt(br.readLine().trim());
+                } catch (NumberFormatException e) {
+                    System.out.println("숫자만 입력하세요.");
+                }
+            }
             team.setTeamNumber(teamNum);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -118,17 +139,31 @@ public class Main {
             System.out.println("이미 등록되었습니다.");
         }
     }
-    private static void registerCustomer(BufferedReader br) {
+    private static void registerCustomer(BufferedReader br) throws DatabaseException {
         Customer customer = new Customer();
         try {
             System.out.print("이름 : ");
             String name = br.readLine().trim();
             customer.setName(name);
-            System.out.print("나이 : ");
-            int age = Integer.parseInt(br.readLine().trim());
+            Integer age = null;
+            while(age == null) {
+                try {
+                    System.out.print("나이 : ");
+                    age = Integer.parseInt(br.readLine().trim());
+                } catch (NumberFormatException e){
+                    System.out.println("숫자만 입력해 주세요.");
+                }
+            }
             customer.setAge(age);
-            System.out.print("성별 (1. 남자, 2. 여자) : ");
-            int sex = Integer.parseInt(br.readLine().trim());
+            Integer sex = null;
+            while(sex == null) {
+                try {
+                    System.out.print("성별 (1. 남자, 2. 여자) : ");
+                    sex = Integer.parseInt(br.readLine().trim());
+                } catch (NumberFormatException e) {
+                    System.out.println("숫자만 입력해 주세요.");
+                }
+            }
             customer.setSex(sex);
             System.out.print("주민등록번호 : ");
             String registraionNumber = br.readLine().trim();
@@ -155,7 +190,7 @@ public class Main {
             String password = br.readLine().trim();
             customer.setPassword(password);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("모든 값을 입력해주세요.");
         }
         if (new CustomerDAOImpl().insertUser(customer)) {
             System.out.println("회원가입이 완료되었습니다.");
@@ -163,7 +198,7 @@ public class Main {
             System.out.println("이미 등록된 회원입니다.");
         }
     }
-    private static String printCustomerLogin(BufferedReader br) {
+    private static String printCustomerLogin(BufferedReader br) throws DatabaseException {
         System.out.println("***************** CUSTOMER LOGIN MENU *****************");
         String[] user = new String[2];
         try {
@@ -172,7 +207,7 @@ public class Main {
             System.out.print("Password : ");
             user[1] = br.readLine().trim();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("모든 값을 입력해주세요.");
         }
         // DB 중심이 아니게 CRUD 만
         if (new CustomerDAOImpl().retrieveUser(user)) {

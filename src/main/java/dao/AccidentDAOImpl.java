@@ -1,6 +1,7 @@
 package dao;
 
 import connector.Database;
+import exception.DatabaseException;
 import insurance.Accident;
 import insurance.AccidentReport;
 
@@ -11,10 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AccidentDAOImpl extends Database implements AccidentDAO {
-    public AccidentDAOImpl() {super.initConnection();}
+    public AccidentDAOImpl() throws DatabaseException {super.initConnection();}
 
     @Override
-    public List<Accident> retrieveAccidentList() {
+    public List<Accident> retrieveAccidentList() throws DatabaseException {
         String query = "SELECT * FROM TmpAccidentInsurance;";
         try (ResultSet rs = super.retrieve(query)) {
             List<Accident> accidentList = new ArrayList<>();
@@ -32,12 +33,11 @@ public class AccidentDAOImpl extends Database implements AccidentDAO {
             }
             return accidentList;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("DB 조회에 오류가 발생했습니다.");
         }
-        return null;
     }
     @Override
-    public boolean updateAccidentInsurance(Accident accident) {
+    public boolean updateAccidentInsurance(Accident accident) throws DatabaseException {
         String query = "SELECT EmployeeID FROM Employee WHERE TeamNum = 1 ORDER BY RAND() LIMIT 2";
         List<String> teamID = new ArrayList<>();
         try (ResultSet rs = super.retrieve(query)) {
@@ -52,23 +52,22 @@ public class AccidentDAOImpl extends Database implements AccidentDAO {
                 + accident.getCustomerID() + "', '" + accident.getCustomerName() + "', '" + accident.getRegistrationNumber() + "', '"
                 + accident.getPhoneNum() + "', '" + accident.getLocation() + "', '" + accident.getAccidentDate() + "', '"
                 + accident.getCarNum() + "' ," + accident.getService() + ", '" + currentDate.toString() +"', '" + teamID.get(0)  + "', '" + teamID.get(1) + "')";
-        if(super.create(query)) return true;
-        return false;
+        return super.create(query);
     }
     @Override
-    public boolean deleteAccidentInsurance(Accident accident) {
+    public boolean deleteAccidentInsurance(Accident accident) throws DatabaseException {
         String query = "DELETE FROM TmpAccidentInsurance WHERE CustomerID = '" + accident.getCustomerID() + "';";
         return super.delete(query);
     }
     @Override
-    public boolean updateAccidentReport(AccidentReport accidentReport, String employeeName, int i) {
+    public boolean updateAccidentReport(AccidentReport accidentReport, String employeeName, int i) throws DatabaseException {
         String query = "";
         if(i == 0) query = "UPDATE RequestCarInsurance SET Compensation = '" + accidentReport.getCompensation() + "', EmployeeOne = '" + employeeName + "' WHERE CustomerID = '" + accidentReport.getCustomerID() + "';";
         else if(i == 1) query = "UPDATE RequestCarInsurance SET Compensation = '" + accidentReport.getCompensation() + "', EmployeeTwo = '" + employeeName + "' WHERE CustomerID = '" + accidentReport.getCustomerID() + "';";
         return super.update(query);
     }
     @Override
-    public List<AccidentReport> retrieveAccidentList(int i) {
+    public List<AccidentReport> retrieveAccidentList(int i) throws DatabaseException {
         String query = "";
         if(i == 0) query = "SELECT * FROM RequestCarInsurance WHERE EmployeeOne IS NULL;";
         else if(i == 1) query = "SELECT * FROM RequestCarInsurance WHERE EmployeeOne IS NOT NULL AND EmployeeTwo IS NULL;";
@@ -94,12 +93,11 @@ public class AccidentDAOImpl extends Database implements AccidentDAO {
             }
             return accidentReportList;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("DB 조회에 오류가 발생했습니다.");
         }
-        return null;
     }
     @Override
-    public boolean deleteAccidentReport(AccidentReport accidentReport) {
+    public boolean deleteAccidentReport(AccidentReport accidentReport) throws DatabaseException {
         String query = "DELETE FROM RequestCarInsurance WHERE CustomerID = '" + accidentReport.getCustomerID() + "';";
         return super.delete(query);
     }

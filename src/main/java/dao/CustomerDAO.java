@@ -1,9 +1,10 @@
 package dao;
 
 import customer.Customer;
+import exception.DatabaseException;
 
 public interface CustomerDAO {
-    boolean insertUser(Customer customer);
-    boolean retrieveUser(String[] user);
-    Customer retrieveUserData(String userName);
+    boolean insertUser(Customer customer) throws DatabaseException;
+    boolean retrieveUser(String[] user) throws DatabaseException;
+    Customer retrieveUserData(String userName) throws DatabaseException;
 }

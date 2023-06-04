@@ -2,6 +2,7 @@ package customer;
 
 import dao.ContractDAOImpl;
 import dao.InsuranceDAOImpl;
+import exception.DatabaseException;
 
 public class CancellationInsurance {
 
@@ -17,11 +18,11 @@ public class CancellationInsurance {
         return false;
     }
 
-    public long retrievePenaltyFeeInsuranceCar(String userName) {
+    public long retrievePenaltyFeeInsuranceCar(String userName) throws DatabaseException {
         return new InsuranceDAOImpl().retrievePenaltyFeeInsuranceCar(userName);
     }
 
-    public boolean deleteCarInsurance(String userName) {
+    public boolean deleteCarInsurance(String userName) throws DatabaseException {
         return new ContractDAOImpl().deleteCarInsurance(userName);
     }
 }

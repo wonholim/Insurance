@@ -1,15 +1,16 @@
 package dao;
 
 import customer.Customer;
+import exception.DatabaseException;
 
 public interface ContractDAO {
-    boolean insertCarInsuranceProduct(Customer customer, String productID, int price);
-    boolean insertDriverInsuranceProduct(Customer customer, String productID, int price);
-    boolean updateDateCarInsurance(String userName);
-    boolean updateDateDriverInsurance(String userName);
-    boolean deleteCarInsurance(String userName);
+    boolean insertCarInsuranceProduct(Customer customer, String productID, int price) throws DatabaseException;
+    boolean insertDriverInsuranceProduct(Customer customer, String productID, int price) throws DatabaseException;
+    boolean updateDateCarInsurance(String userName) throws DatabaseException;
+    boolean updateDateDriverInsurance(String userName) throws DatabaseException;
+    boolean deleteCarInsurance(String userName) throws DatabaseException;
 
-    boolean deleteDriverInsurance(String userName);
-    String[] retrieveCarInsuranceInformations(String userName);
-    String[] retrieveDriverInsuranceInformations(String userName);
+    boolean deleteDriverInsurance(String userName) throws DatabaseException;
+    String[] retrieveCarInsuranceInformations(String userName) throws DatabaseException;
+    String[] retrieveDriverInsuranceInformations(String userName) throws DatabaseException;
 }

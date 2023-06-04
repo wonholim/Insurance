@@ -1,6 +1,7 @@
 package dao;
 
 import connector.Database;
+import exception.DatabaseException;
 import insurance.Injury;
 import insurance.InjuryReport;
 
@@ -11,10 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InjuryDAOImpl extends Database implements InjuryDAO {
-    public InjuryDAOImpl() {super.initConnection();}
+    public InjuryDAOImpl() throws DatabaseException {super.initConnection();}
 
     @Override
-    public List<Injury> retrieveInjuryList() {
+    public List<Injury> retrieveInjuryList() throws DatabaseException {
         String query = "SELECT * FROM TmpDriverInsurance;";
         try (ResultSet rs = super.retrieve(query)) {
             List<Injury> injuries = new ArrayList<>();
@@ -31,19 +32,18 @@ public class InjuryDAOImpl extends Database implements InjuryDAO {
             }
             return injuries;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("DB 조회에 오류가 발생했습니다.");
         }
-        return null;
     }
 
     @Override
-    public boolean deleteInjuryInsurance(Injury injury) {
+    public boolean deleteInjuryInsurance(Injury injury) throws DatabaseException {
         String query = "DELETE FROM TmpDriverInsurance WHERE CustomerID = '" + injury.getCustomerID() + "';";
         return super.delete(query);
     }
 
     @Override
-    public boolean updateInjuryInsurance(Injury injury) {
+    public boolean updateInjuryInsurance(Injury injury) throws DatabaseException {
         String query = "SELECT EmployeeID FROM Employee WHERE TeamNum = 1 ORDER BY RAND() LIMIT 2";
         List<String> teamID = new ArrayList<>();
         try (ResultSet rs = super.retrieve(query)) {
@@ -58,11 +58,10 @@ public class InjuryDAOImpl extends Database implements InjuryDAO {
                 + injury.getCustomerID() + "', '" + injury.getCustomerName() + "', '" + injury.getRegistrationNumber() + "', '"
                 + injury.getPhoneNum() + "', '" + injury.getLocation() + "', '" + injury.getInjuryDate() + "', '"
                 + injury.getDisease() + "', '" + currentDate.toString() +"', '" + teamID.get(0)  + "', '" + teamID.get(1) + "')";
-        if(super.create(query)) return true;
-        return false;
+        return super.create(query);
     }
     @Override
-    public List<InjuryReport> retrieveInjuryList(int i) {
+    public List<InjuryReport> retrieveInjuryList(int i) throws DatabaseException {
         String query = "";
         if(i == 0) query = "SELECT * FROM RequestInjuryInsurance WHERE EmployeeOne IS NULL;";
         else if(i == 1) query = "SELECT * FROM RequestInjuryInsurance WHERE EmployeeOne IS NOT NULL AND EmployeeTwo IS NULL;";
@@ -84,19 +83,18 @@ public class InjuryDAOImpl extends Database implements InjuryDAO {
             }
             return injuryReports;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("DB 조회에 오류가 발생했습니다.");
         }
-        return null;
     }
     @Override
-    public boolean updateInjuryReport(InjuryReport injuryReport, String employeeName, int i) {
+    public boolean updateInjuryReport(InjuryReport injuryReport, String employeeName, int i) throws DatabaseException {
         String query = "";
         if (i == 0) query = "UPDATE RequestInjuryInsurance SET Compensation = '" + injuryReport.getCompensation() + "', EmployeeOne = '" + employeeName + "' WHERE CustomerID = '" + injuryReport.getCustomerID() + "';";
         else if(i == 1) query = "UPDATE RequestInjuryInsurance SET Compensation = '" + injuryReport.getCompensation() + "', EmployeeTwo = '" + employeeName + "' WHERE CustomerID = '" + injuryReport.getCustomerID() + "';";
         return super.update(query);
     }
     @Override
-    public boolean deleteInjuryReport(InjuryReport injuryReport) {
+    public boolean deleteInjuryReport(InjuryReport injuryReport) throws DatabaseException {
         String query = "DELETE FROM RequestInjuryInsurance WHERE CustomerID = '" + injuryReport.getCustomerID() + "';";
         return super.delete(query);
     }
