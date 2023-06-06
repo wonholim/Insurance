@@ -166,6 +166,7 @@ public class EmployeeLoginView {
                                         break;
                                     }
                                     System.out.println("손해 조사 처리를 완료 했습니다.");
+                                    break;
                                 case "r": break ThreeOut;
                                 default: System.out.println("입력값이 올바르지 않습니다.");
                             }
@@ -276,7 +277,7 @@ public class EmployeeLoginView {
                 }
             }
         } catch (IOException| DatabaseException e) {
-            System.out.println(e.getMessage());
+            System.out.println("시스템에 문제가 발새했습니다.");
         }
     }
 
@@ -301,8 +302,16 @@ public class EmployeeLoginView {
             System.out.println(count++ + " | 아이디 : " + list.getCustomerID() + " 최종 보상금 : " + list.getCompensation());
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
-        int select = Integer.parseInt(bufferedReader.readLine().trim());
-        if(select < 0 || select > count - 1) return -1;
+        int select = -1;
+        try {
+            select = Integer.parseInt(bufferedReader.readLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("숫자만 입력해주세요.");
+        }
+        if(select < 0 || select > count - 1) {
+            System.out.println("잘못된 입력입니다.");
+            return -1;
+        }
         return select;
     }
 
@@ -317,10 +326,16 @@ public class EmployeeLoginView {
             list.setCompensation(list.getCompensation() - 100000);
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
-        int select = Integer.parseInt(bufferedReader.readLine());
-        if(select < 0 || select > count - 1) return -1;
-        // 손해 사정 처리
-        System.out.println("과진료 보상금 차감");
+        int select = -1;
+        try {
+            select = Integer.parseInt(bufferedReader.readLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("숫자만 입력해주세요.");
+        }
+        if(select < 0 || select > count - 1) {
+            System.out.println("잘못된 입력입니다.");
+            return -1;
+        }
         return select;
     }
 
@@ -335,8 +350,16 @@ public class EmployeeLoginView {
             list.setCompensation(calculateInjury(list));
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
-        int select = Integer.parseInt(bufferedReader.readLine());
-        if(select < 0 || select > count - 1) return -1;
+        int select = -1;
+        try {
+            select = Integer.parseInt(bufferedReader.readLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("숫자만 입력해주세요.");
+        }
+        if(select < 0 || select > count - 1) {
+            System.out.println("잘못된 입력입니다.");
+            return -1;
+        }
         return select;
     }
 
@@ -367,8 +390,16 @@ public class EmployeeLoginView {
                     + " | 차량 파손 여부 : " + list.getDamageCondition() + " | 상대차 유/무 : " + list.getOtherCar() + "자동 계산 보상금 : " + calculateCar(list));
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
-        int select = Integer.parseInt(bufferedReader.readLine());
-        if(select < 0 || select > count - 1) return -1;
+        int select = -1;
+        try {
+            select = Integer.parseInt(bufferedReader.readLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("숫자만 입력해주세요.");
+        }
+        if(select < 0 || select > count - 1){
+            System.out.println("잘못된 입력입니다.");
+            return -1;
+        }
         // 손해 사정 처리
         if(accidentReports.get(select).getOtherCar() == 1) {
             System.out.println("상대 보험사와 합의 해 5 : 5로 손해 사정을 완료했습니다.");
@@ -384,7 +415,12 @@ public class EmployeeLoginView {
             System.out.println(count++ + " | 아이디 : " + list.getCustomerID() + "최종 보상금 : " + list.getCompensation());
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
-        int select = Integer.parseInt(bufferedReader.readLine());
+        int select = -1;
+        try {
+            select = Integer.parseInt(bufferedReader.readLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("숫자만 입력해주세요.");
+        }
         if(select < 0 || select > count - 1) {
             System.out.println("잘못된 입력입니다.");
             return -1;
@@ -404,7 +440,12 @@ public class EmployeeLoginView {
             list.setCompensation(calculateCar(list));
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
-        int select = Integer.parseInt(bufferedReader.readLine());
+        int select = -1;
+        try {
+            select = Integer.parseInt(bufferedReader.readLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("숫자만 입력해주세요.");
+        }
         if(select < 0 || select > count - 1) {
             System.out.println("잘못된 입력입니다.");
             return -1;
@@ -434,7 +475,12 @@ public class EmployeeLoginView {
                     + " | 사고 지역 : " + list.getLocation() + " | 병명 : " + list.getDisease());
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
-        int select = Integer.parseInt(bufferedReader.readLine());
+        int select = -1;
+        try {
+            select = Integer.parseInt(bufferedReader.readLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("숫자만 입력해주세요.");
+        }
         if(select < 0 || select > count - 1) {
             System.out.println("잘못된 입력입니다.");
             return -1;
@@ -452,7 +498,12 @@ public class EmployeeLoginView {
                     + " | 사고 지역 : " + list.getLocation() + " | 차 번호 : " + list.getCarNum());
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
-        int select = Integer.parseInt(bufferedReader.readLine());
+        int select = -1;
+        try {
+            select = Integer.parseInt(bufferedReader.readLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("숫자만 입력해주세요.");
+        }
         if(select < 0 || select > count - 1) {
             System.out.println("잘못된 입력입니다.");
             return -1;
@@ -476,7 +527,12 @@ public class EmployeeLoginView {
                     + driver.getPrice());
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
-        int select = Integer.parseInt(bufferedReader.readLine());
+        int select = -1;
+        try {
+            select = Integer.parseInt(bufferedReader.readLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("숫자만 입력해주세요.");
+        }
         if(select < 0 || select > count - 1) {
             System.out.println("잘못된 입력입니다.");
             return -1;
@@ -491,8 +547,12 @@ public class EmployeeLoginView {
                     + " | 운전면허 : " + c.getDriverLicense() + " | 월 납부료 : " + c.getPrice());
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
-        int select = Integer.parseInt(bufferedReader.readLine().trim());
-        if(select < 0 || select > count - 1) {
+        int select = -1;
+        try {
+            select = Integer.parseInt(bufferedReader.readLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("숫자만 입력해주세요.");
+        }if(select < 0 || select > count - 1) {
             System.out.println("잘못된 입력입니다.");
             return -1;
         }

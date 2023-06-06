@@ -454,14 +454,10 @@ public class CustomerLoginView {
     private InjuryReport printRequestDriverInsurancePayout(BufferedReader bufferedReader) throws IOException {
         InjuryReport injuryReport = new InjuryReport();
         System.out.println("***************** 청구서류 작성 *****************");
-        System.out.println("염좌 여부 (0. 없음 1. 있음) : ");
-        injuryReport.setSprain(Integer.parseInt(bufferedReader.readLine().trim()));
-        System.out.println("단순 골절 (0. 없음 1. 있음) : ");
-        injuryReport.setSimpleFracture(Integer.parseInt(bufferedReader.readLine().trim()));
-        System.out.println("개방성 골절 (0. 없음 1. 있음) : ");
-        injuryReport.setOpenFracture(Integer.parseInt(bufferedReader.readLine().trim()));
-        System.out.println("절단 여부 (0. 없음 1. 있음) :");
-        injuryReport.setCut(Integer.parseInt(bufferedReader.readLine().trim()));
+        injuryReport.setSprain(inputNumbers("염좌 여부 (0. 없음 1. 있음) : ", bufferedReader, 0, 1));
+        injuryReport.setSimpleFracture(inputNumbers("단순 골절 (0. 없음 1. 있음) : ", bufferedReader, 0, 1));
+        injuryReport.setOpenFracture(inputNumbers("개방성 골절 (0. 없음 1. 있음) : ", bufferedReader, 0, 1));
+        injuryReport.setCut(inputNumbers("절단 여부 (0. 없음 1. 있음) :", bufferedReader, 0, 1));
         System.out.println("청구 서류 작성이 완료 되었습니다.");
         return injuryReport;
     }
@@ -469,26 +465,32 @@ public class CustomerLoginView {
     private AccidentReport printRequestCarInsurancePayout(BufferedReader bufferedReader) throws IOException {
         AccidentReport accidentReport = new AccidentReport();
         System.out.println("***************** 청구서류 작성 *****************");
-        System.out.println("타이어 파손 개수 여부(1, 2, 3, 4) : ");
-        accidentReport.setTire(Integer.parseInt(bufferedReader.readLine().trim()));
-        System.out.println("앞 범퍼 파손 여부 (0. 파손X, 1. 파손O) : ");
-        accidentReport.setFrontBumper(Integer.parseInt(bufferedReader.readLine().trim()));
-        System.out.println("뒷 범퍼 파손 여부 (0. 파손X, 1. 파손O) : ");
-        accidentReport.setBackBumper(Integer.parseInt(bufferedReader.readLine().trim()));
-        System.out.println("앞 라이트 파손 개수 여부 (1, 2) :");
-        accidentReport.setFrontLight(Integer.parseInt(bufferedReader.readLine().trim()));
-        System.out.println("뒷 라이트 파손 개수 여부 (1, 2) :");
-        accidentReport.setBackLight(Integer.parseInt(bufferedReader.readLine().trim()));
-        System.out.println("문 파손 개수 여부 (1, 2, 3, 4) :");
-        accidentReport.setDoor(Integer.parseInt(bufferedReader.readLine().trim()));
-        System.out.println("0. 경미한 파손 1. 반정도 파손 2. 완전 파손 : ");
-        accidentReport.setDamageCondition(Integer.parseInt(bufferedReader.readLine().trim()));
-        System.out.println("상대 차량 여부 (0. 없음 1. 있음) :");
-        accidentReport.setOtherCar(Integer.parseInt(bufferedReader.readLine().trim()));
+        accidentReport.setTire(inputNumbers("타이어 파손 개수 여부(1, 2, 3, 4) : ", bufferedReader, 1, 4));
+        accidentReport.setFrontBumper(inputNumbers("앞 범퍼 파손 여부 (0. 파손X, 1. 파손O) : ", bufferedReader, 0, 1));
+        accidentReport.setBackBumper(inputNumbers("뒷 범퍼 파손 여부 (0. 파손X, 1. 파손O) : ", bufferedReader, 0, 1));
+        accidentReport.setFrontLight(inputNumbers("앞 라이트 파손 개수 여부 (1, 2) :", bufferedReader, 1, 2));
+        accidentReport.setBackLight(inputNumbers("뒷 라이트 파손 개수 여부 (1, 2) :", bufferedReader, 1, 2));
+        accidentReport.setDoor(inputNumbers("문 파손 개수 여부 (1, 2, 3, 4) :", bufferedReader, 1, 4));
+        accidentReport.setDamageCondition(inputNumbers("0. 경미한 파손 1. 반정도 파손 2. 완전 파손 : ", bufferedReader, 1, 2));
+        accidentReport.setOtherCar(inputNumbers("상대 차량 여부 (0. 없음 1. 있음) :", bufferedReader, 0, 1));
         System.out.println("청구 서류 작성이 완료 되었습니다.");
         return accidentReport;
     }
-
+    public int inputNumbers(String s, BufferedReader bufferedReader, int i, int j){
+        while(true){
+            try {
+                System.out.println(s);
+                int input = Integer.parseInt(bufferedReader.readLine().trim());
+                if(input < i || input > j){
+                    System.out.println(i + " 부터 " + j + " 의 숫자만 입력해주세요.");
+                }else{
+                    return input;
+                }
+            }catch (NumberFormatException | IOException e){
+                System.out.println("숫자만 입력하세요.");
+            }
+        }
+    }
     private void printRequestInsurancePayoutMenu() {
         System.out.println("***************** RequestInsurancePayout MENU *****************");
         System.out.println("1. 자동차 사고 보험금 접수");

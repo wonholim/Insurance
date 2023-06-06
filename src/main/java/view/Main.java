@@ -93,6 +93,10 @@ public class Main {
                 try {
                     System.out.print("나이 : ");
                     age = Integer.parseInt(br.readLine().trim());
+                    if(age > 100 || age < 1) {
+                        System.out.println("올바른 나이를 입력해주세요.");
+                        age = null;
+                    }
                 } catch (NumberFormatException e){
                     System.out.println("숫자만 입력해 주세요.");
                 }
@@ -115,6 +119,10 @@ public class Main {
                 try {
                     System.out.print("직급 (1. 사원, 2. 대리, 3. 과장, 4. 부장, 5. 사장) : ");
                     rank = Integer.parseInt(br.readLine().trim());
+                    if(rank > 5 || rank < 1) {
+                        System.out.println("1부터 5까지의 숫자를 입력해주세요");
+                        rank = null;
+                    }
                 } catch (NumberFormatException e) {
                     System.out.println("숫자만 입력하세요.");
                 }
@@ -125,6 +133,10 @@ public class Main {
                 try {
                     System.out.print("부서 (1. 사고 처리팀, 2. 보상 처리팀, 3. 언더라이팅팀, 4. 손해 사정팀, 5. 상품 개발팀) :");
                     teamNum = Integer.parseInt(br.readLine().trim());
+                    if(teamNum > 5 || teamNum < 1) {
+                        System.out.println("1부터 5까지 숫자를 입력해주세요");
+                        teamNum = null;
+                    }
                 } catch (NumberFormatException e) {
                     System.out.println("숫자만 입력하세요.");
                 }
@@ -160,6 +172,10 @@ public class Main {
                 try {
                     System.out.print("성별 (1. 남자, 2. 여자) : ");
                     sex = Integer.parseInt(br.readLine().trim());
+                    if(sex < 1 || sex > 2) {
+                        System.out.println("1 또는 2만 입력해주세요.");
+                        sex = null;
+                    }
                 } catch (NumberFormatException e) {
                     System.out.println("숫자만 입력해 주세요.");
                 }
@@ -209,7 +225,6 @@ public class Main {
         } catch (IOException e) {
             System.out.println("모든 값을 입력해주세요.");
         }
-        // DB 중심이 아니게 CRUD 만
         if (new CustomerDAOImpl().retrieveUser(user)) {
             System.out.println(user[0] + "님 환영합니다.");
             return user[0];

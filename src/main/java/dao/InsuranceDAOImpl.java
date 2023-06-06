@@ -43,6 +43,8 @@ public class InsuranceDAOImpl extends Database implements InsuranceDAO {
             if(rs.next()) {
                 subcriptionDate = rs.getString("subcriptionDate");
                 coverageExpirationDate = rs.getString("coverageExpirationDate");
+            }else {
+                return 0;
             }
         } catch (SQLException e) {
             throw new DatabaseException("DB 조회에 오류가 발생했습니다.");
@@ -66,6 +68,8 @@ public class InsuranceDAOImpl extends Database implements InsuranceDAO {
             if(rs.next()) {
                 subcriptionDate = rs.getString("subcriptionDate");
                 coverageExpirationDate = rs.getString("coverageExpirationDate");
+            }else {
+                return 0;
             }
         } catch (SQLException e) {
             throw new DatabaseException("DB 조회에 오류가 발생했습니다.");
