@@ -73,7 +73,7 @@ public class Car extends Insurance {
     public String printProduct() {
         String line = customer.getName() + "님의 자동차 보험 가입 안내서" + "\n"
                 + "차종 : " + customer.getCarModel() + "\n"
-                + "성별 : " + customer.getSex() + "\n"
+                + "성별 : " + (customer.getSex() == 1 ? "남자" : "여자") + "\n"
                 + "나이 : " + customer.getAge() + "\n"
                 + "월 납입료 : " + (int)(subscribe() * calculateRate(customer)) + "\n"
                 + "계약 기간 : 10년";

@@ -97,7 +97,7 @@ public class EmployeeDAOImpl extends Database implements EmployeeDAO {
                 teamID.add(rs.getString("EmployeeID"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("직원이 2명이상 존재하지 않습니다.");
         }
         LocalDate currentDate = LocalDate.now();
         LocalDate dateIn10Years = currentDate.plusYears(10);

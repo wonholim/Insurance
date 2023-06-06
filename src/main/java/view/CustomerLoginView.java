@@ -330,14 +330,14 @@ public class CustomerLoginView {
                                 Customer customer = new CustomerDAOImpl().retrieveUserData(userName);
                                 if(!new ContractDAOImpl().retrieveInsuranceProduct(userName, "1")){
                                     if(new ContractDAOImpl().insertInsuranceProduct(customer, "1", (int) (new Car(null).subscribe() * new Car(null).calculateRate(customer)))){
-                                        System.out.println("자동차 보험 가입 신청이 완료되었습니다. 검증 후 3일 뒤 가입 신청 결과를 확인할 수 있습니다.");
+                                        System.out.println("자동차 보험 가입 신청이 완료되었습니다. 최대 3일 뒤 가입 신청 결과를 확인할 수 있습니다.");
                                     } else {
                                         System.out.println("보험 가입에 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
                                     }
                                 }else{
                                     System.out.println("이미 등록된 보험이거나, 보험 가입이 거절 되었습니다.");
                                 }
-                                break;
+                                break OneOut;
                             case "r": break OneOut;
                             default : System.out.println("입력값이 올바르지 않습니다.");
                         }
@@ -359,14 +359,14 @@ public class CustomerLoginView {
                                 Customer customer = new CustomerDAOImpl().retrieveUserData(userName);
                                 if(!new ContractDAOImpl().retrieveInsuranceProduct(userName, "2")){
                                     if(new ContractDAOImpl().insertInsuranceProduct(customer, "2", (int) (new Driver(null).subscribe() * new Car(null).calculateRate(customer)))){
-                                        System.out.println("운전자 보험 가입 신청이 완료되었습니다. 검증 후 3일 뒤 가입 신청 결과를 확인할 수 있습니다.");
+                                        System.out.println("운전자 보험 가입 신청이 완료되었습니다. 최대 3일 뒤 가입 신청 결과를 확인할 수 있습니다.");
                                     } else {
                                         System.out.println("보험 가입에 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
                                     }
                                 }else{
                                     System.out.println("이미 등록된 보험거나, 보험 가입이 거절 되었습니다.");
                                 }
-                                break;
+                                break TwoOut;
                             case "r":
                                 break TwoOut;
                             default : System.out.println("입력값이 올바르지 않습니다.");
@@ -520,8 +520,15 @@ public class CustomerLoginView {
         System.out.print("사고 일시(YYYY-MM-DD) : ");
         String accidentDate = bufferedReader.readLine().trim();
         accident.setAccidentDate(accidentDate);
-        System.out.print("서비스 종류 (1. 현장 출동, 2. 긴급 출동) : ");
-        int service = Integer.parseInt(bufferedReader.readLine().trim());
+        Integer service = null;
+        while(service == null) {
+            try {
+                System.out.print("서비스 종류 (1. 현장 출동, 2. 긴급 출동) : ");
+                service = Integer.parseInt(bufferedReader.readLine().trim());
+            } catch (NumberFormatException e){
+                System.out.println("숫자만 입력하세요.");
+            }
+        }
         accident.setService(service);
         return accident;
     }

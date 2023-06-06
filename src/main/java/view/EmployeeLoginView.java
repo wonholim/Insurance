@@ -385,7 +385,10 @@ public class EmployeeLoginView {
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
         int select = Integer.parseInt(bufferedReader.readLine());
-        if(select < 0 || select > count - 1) return -1;
+        if(select < 0 || select > count - 1) {
+            System.out.println("잘못된 입력입니다.");
+            return -1;
+        }
         return select;
     }
 
@@ -402,7 +405,10 @@ public class EmployeeLoginView {
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
         int select = Integer.parseInt(bufferedReader.readLine());
-        if(select < 0 || select > count - 1) return -1;
+        if(select < 0 || select > count - 1) {
+            System.out.println("잘못된 입력입니다.");
+            return -1;
+        }
         return select;
     }
 
@@ -429,7 +435,10 @@ public class EmployeeLoginView {
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
         int select = Integer.parseInt(bufferedReader.readLine());
-        if(select < 0 || select > count - 1) return -1;
+        if(select < 0 || select > count - 1) {
+            System.out.println("잘못된 입력입니다.");
+            return -1;
+        }
         return select;
     }
 
@@ -444,7 +453,10 @@ public class EmployeeLoginView {
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
         int select = Integer.parseInt(bufferedReader.readLine());
-        if(select < 0 || select > count - 1) return -1;
+        if(select < 0 || select > count - 1) {
+            System.out.println("잘못된 입력입니다.");
+            return -1;
+        }
         return select;
     }
 
@@ -465,7 +477,10 @@ public class EmployeeLoginView {
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
         int select = Integer.parseInt(bufferedReader.readLine());
-        if(select < 0 || select > count - 1) return -1;
+        if(select < 0 || select > count - 1) {
+            System.out.println("잘못된 입력입니다.");
+            return -1;
+        }
         return select;
     }
     private int printTmpCarCustomer(List<Car> list, BufferedReader bufferedReader) throws IOException {
@@ -477,7 +492,10 @@ public class EmployeeLoginView {
         }
         System.out.println("0 부터 " + (count - 1) + "까지 선택 해주세요.");
         int select = Integer.parseInt(bufferedReader.readLine().trim());
-        if(select < 0 || select > count - 1) return -1;
+        if(select < 0 || select > count - 1) {
+            System.out.println("잘못된 입력입니다.");
+            return -1;
+        }
         return select;
     }
 
